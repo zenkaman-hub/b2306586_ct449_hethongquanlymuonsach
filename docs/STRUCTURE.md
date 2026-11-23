@@ -117,24 +117,28 @@ b2306586_ct449_hethongquanlymuonsach/
 | Đường dẫn file | Nhóm API (Base URL) | Các endpoint chính | Ghi chú |
 | :--- | :--- | :--- | :--- |
 | `src/routes/auth.route.js` | `/api/auth` | `POST /register`, `POST /login`, `POST /logout`, `PUT /change-password`, `GET /me` | Hoàn thành D1-05 |
+| `src/routes/nhaXuatBan.route.js` | `/api/publishers` (và `/api/nha-xuat-ban`) | `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `PATCH /:id/status`, `DELETE /:id` | Hoàn thành D1-06 (NXB) |
 
 ### 3.6. Controllers (`controllers/`)
 
 | Đường dẫn file | Phụ trách nghiệp vụ | Các hàm handler chính | Ghi chú |
 | :--- | :--- | :--- | :--- |
 | `src/controllers/auth.controller.js` | Xác thực & tài khoản cá nhân | `dangKy`, `dangNhap`, `dangXuat`, `doiMatKhau`, `layThongTinMe` | Hoàn thành D1-05 |
+| `src/controllers/nhaXuatBan.controller.js` | Quản lý Nhà xuất bản | `layDanhSach`, `layChiTiet`, `taoMoi`, `capNhat`, `doiTrangThai`, `xoa` | Hoàn thành D1-06 (NXB) |
 
 ### 3.7. Services (`services/`)
 
 | Đường dẫn file | Logic nghiệp vụ đảm nhiệm | Các hàm nghiệp vụ chính | Ghi chú |
 | :--- | :--- | :--- | :--- |
 | `src/services/auth.service.js` | Đăng ký độc giả (Transaction), đăng nhập (kiểm tra khóa tài khoản BR-03, phân biệt hạn chế mượn BR-04), đổi mật khẩu, lấy hồ sơ hiện tại | `dangKyDocGia(duLieu)`, `dangNhap({ tenDangNhap, matKhau })`, `doiMatKhau(taiKhoanId, { matKhauHienTai, matKhauMoi })`, `layThongTinHienTai(taiKhoanId)` | Hoàn thành D1-05 |
+| `src/services/nhaXuatBan.service.js` | CRUD Nhà xuất bản, tự sinh `maNXB`, thống kê `soDauSach`, đồng bộ `maNXB` sang `sach`, chặn xóa vật lý khi có sách tham chiếu (BR-11) | `layDanhSachNXB(query)`, `layChiTietNXB(id)`, `taoNXB(duLieu, nguoiThucHienId)`, `capNhatNXB(id, duLieuCapNhat, nguoiThucHienId)`, `capNhatTrangThaiNXB(id, trangThai, nguoiThucHienId)`, `xoaNXB(id)` | Hoàn thành D1-06 (NXB) |
 
 ### 3.8. Validators, Utils & Tests (`validators/`, `utils/`, `tests/`)
 
 | Đường dẫn file | Chức năng chính | Các hàm chính | Ghi chú |
 | :--- | :--- | :--- | :--- |
 | `src/validators/auth.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Auth | `validateDangKyDocGia(body)`, `validateDangNhap(body)`, `validateDoiMatKhau(body)` | Hoàn thành D1-05 |
+| `src/validators/nhaXuatBan.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Nhà xuất bản | `validateTaoNXB(body)`, `validateCapNhatNXB(body)`, `validateCapNhatTrangThaiNXB(body)` | Hoàn thành D1-06 (NXB) |
 | `src/utils/AppError.js` | Lớp lỗi nghiệp vụ tùy chỉnh chứa `statusCode`, `errorCode`, `details` | `class AppError` | Hoàn thành D1-05 |
 | `src/utils/seed.js` | Script khởi tạo dữ liệu mẫu idempotent (Cấu hình mặc định, Admin, Thủ thư, 2 Độc giả, 3 NXB, 5 Đầu sách) | `seedDatabase()`, chạy bằng `npm run seed` | Hoàn thành D1-02 |
 
