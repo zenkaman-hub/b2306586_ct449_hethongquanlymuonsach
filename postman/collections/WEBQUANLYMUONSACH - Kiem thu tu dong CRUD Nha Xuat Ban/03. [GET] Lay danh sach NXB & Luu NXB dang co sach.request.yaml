@@ -1,0 +1,24 @@
+$kind: http-request
+url: "{{baseUrl}}/publishers?page=1&limit=10"
+method: GET
+queryParams:
+  page: "1"
+  limit: "10"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve danhSach va phanTrang hop le', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.danhSach).to.be.an('array');
+          pm.expect(json.data.phanTrang).to.be.an('object');
+      });
+      const nxbCoSach = json.data.danhSach.find(item => item.soDauSach > 0);
+      if (nxbCoSach) {
+          pm.collectionVariables.set('nxbCoSachId', nxbCoSach._id);
+      }
+    language: text/javascript
+order: 3000

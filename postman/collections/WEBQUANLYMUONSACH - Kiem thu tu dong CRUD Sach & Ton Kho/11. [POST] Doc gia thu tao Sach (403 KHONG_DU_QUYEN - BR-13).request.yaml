@@ -1,0 +1,30 @@
+$kind: http-request
+url: "{{baseUrl}}/books"
+method: POST
+headers:
+  Authorization: Bearer {{readerToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenSach": "Sach Doc Gia Thu Tao",
+      "donGia": 100000,
+      "tongSoQuyen": 5,
+      "namXuatBan": 2024,
+      "nhaXuatBanId": "{{activeNxbId}}",
+      "nguonGocTacGia": "Doc Gia"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan DOC_GIA tao sach voi ma loi KHONG_DU_QUYEN', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');
+      });
+    language: text/javascript
+order: 11000

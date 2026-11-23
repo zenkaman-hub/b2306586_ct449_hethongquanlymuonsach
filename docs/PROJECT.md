@@ -524,7 +524,7 @@ Không nên dùng một trạng thái duy nhất cho cả phiếu và từng cu�
 
 Tất cả Agent tham gia dự án phải tuân thủ:
 
-1.  Đọc tài liệu `PROJECT.md` trước khi thực hiện công việc.
+1.  Đọc `AGENTS.md` ở thư mục gốc trước để xác định đúng phạm vi tài liệu cần đọc (chỉ đọc các mục liên quan trong `PROJECT.md`, `db.md`, `docs/api/` để tránh quá tải ngữ cảnh).
 2.  Không tự ý thay đổi ba vai trò người dùng hoặc công nghệ đã chốt.
 3.  Không tự ý thay đổi quy tắc mượn/trả đã được chủ dự án xác nhận.
 4.  Nếu chính sách chưa được xác nhận, phải đánh dấu là **PENDING

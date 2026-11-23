@@ -1,0 +1,10 @@
+$kind: collection
+description: Bo kiem thu tu dong (Collection Runner) cho module Nha xuat ban (/api/publishers) theo PROJECT.md va BR-11.
+variables:
+  baseUrl: http://localhost:5000/api
+  adminToken: ""
+  readerToken: ""
+  createdNxbId: ""
+  createdMaNXB: ""
+  nxbCoSachId: ""
+  tenNxbTest: ""

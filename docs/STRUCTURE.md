@@ -11,15 +11,23 @@
 
 ```text
 b2306586_ct449_hethongquanlymuonsach/
+├── AGENTS.md                   # Điểm đọc đầu tiên & bảng định tuyến context cho AI Agent
 ├── README.md                   # Hướng dẫn cài đặt và chạy dự án
 ├── .gitignore                  # Danh sách file/thư mục bỏ qua khi commit Git
+│
+├── database/                   # Script khởi tạo CSDL MongoDB độc lập
+│   └── khoi_tao_csdl.js        # Script tạo 9 collection, $jsonSchema và indexes (idempotent)
 │
 ├── docs/                       # Tài liệu kỹ thuật, thiết kế & kiểm thử
 │   ├── PROJECT.md              # Tài liệu định hướng nghiệp vụ và quy tắc cho AI Agent
 │   ├── PLAN.md                 # Kế hoạch phát triển dự án trong 3 ngày
-│   ├── db.md                   # Thiết kế chi tiết 9 collection MongoDB & script khởi tạo
+│   ├── db.md                   # Thiết kế chi tiết 9 collection MongoDB
 │   ├── STRUCTURE.md            # Tài liệu cấu trúc thư mục và chú thích hàm (file này)
-│   ├── API.md                  # Đặc tả RESTful API contract
+│   ├── API.md                  # Quy ước chung, mục lục API theo module và tài khoản seed
+│   ├── api/                    # Đặc tả chi tiết RESTful API tách riêng theo từng module
+│   │   ├── auth.md             # Module Xác thực & Phân quyền (/api/auth)
+│   │   ├── publishers.md       # Module Nhà xuất bản (/api/publishers)
+│   │   └── books.md            # Module Sách & Tồn kho (/api/books)
 │   └── postman/                # Collection & Environment kiểm thử API trên Postman
 │
 ├── backend/                    # Server API (Node.js + Express.js + MongoDB, CommonJS)
@@ -66,11 +74,14 @@ b2306586_ct449_hethongquanlymuonsach/
 
 | File / Thư mục | Vai trò / Mục đích | Ghi chú cập nhật |
 | :--- | :--- | :--- |
+| `AGENTS.md` | Điểm đọc đầu tiên, quy ước code & bảng định tuyến context cho AI Agent | Mới tạo (chống quá tải ngữ cảnh) |
+| `database/khoi_tao_csdl.js` | Script MongoDB khởi tạo 9 collection, `$jsonSchema` và indexes (idempotent) | Tách từ `docs/db.md` |
 | `docs/PROJECT.md` | Đặc tả nghiệp vụ, phân quyền 3 vai trò và quy tắc làm việc | Tài liệu gốc |
 | `docs/PLAN.md` | Kế hoạch chia task theo 3 ngày (D1, D2, D3) | Tài liệu gốc |
-| `docs/db.md` | Chi tiết schema, index, quan hệ 9 collection MongoDB & `khoi_tao_csdl.js` | Chuẩn dữ liệu duy nhất |
-| `docs/STRUCTURE.md` | Mô tả cấu trúc thư mục và danh mục file/hàm | Đã cập nhật Task D1-02 & D1-05 |
-| `docs/API.md` | Danh sách endpoint, request/response và mã lỗi | Đã tạo & cập nhật Module Auth |
+| `docs/db.md` | Chi tiết schema, index, quan hệ 9 collection MongoDB | Chuẩn dữ liệu duy nhất |
+| `docs/STRUCTURE.md` | Mô tả cấu trúc thư mục và danh mục file/hàm | Cập nhật liên tục |
+| `docs/API.md` | Quy ước chung, mục lục API theo module & tài khoản seed | Hub dẫn tới `docs/api/` |
+| `docs/api/` | Đặc tả chi tiết từng module API (`auth.md`, `publishers.md`, `books.md`...) | Tách theo module để tránh conflict |
 | `docs/postman/` | File export bộ test API trên Postman | `[Chưa tạo / Đang cập nhật]` |
 
 ---
@@ -118,6 +129,7 @@ b2306586_ct449_hethongquanlymuonsach/
 | :--- | :--- | :--- | :--- |
 | `src/routes/auth.route.js` | `/api/auth` | `POST /register`, `POST /login`, `POST /logout`, `PUT /change-password`, `GET /me` | Hoàn thành D1-05 |
 | `src/routes/nhaXuatBan.route.js` | `/api/publishers` (và `/api/nha-xuat-ban`) | `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `PATCH /:id/status`, `DELETE /:id` | Hoàn thành D1-06 (NXB) |
+| `src/routes/sach.route.js` | `/api/books` (và `/api/sach`) | `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `PATCH /:id/inventory`, `PATCH /:id/status`, `DELETE /:id` | Hoàn thành D1-06 (Sách) |
 
 ### 3.6. Controllers (`controllers/`)
 
@@ -125,13 +137,15 @@ b2306586_ct449_hethongquanlymuonsach/
 | :--- | :--- | :--- | :--- |
 | `src/controllers/auth.controller.js` | Xác thực & tài khoản cá nhân | `dangKy`, `dangNhap`, `dangXuat`, `doiMatKhau`, `layThongTinMe` | Hoàn thành D1-05 |
 | `src/controllers/nhaXuatBan.controller.js` | Quản lý Nhà xuất bản | `layDanhSach`, `layChiTiet`, `taoMoi`, `capNhat`, `doiTrangThai`, `xoa` | Hoàn thành D1-06 (NXB) |
+| `src/controllers/sach.controller.js` | Quản lý Đầu sách & Tồn kho | `layDanhSach`, `layChiTiet`, `taoMoi`, `capNhat`, `dieuChinhTonKho`, `doiTrangThai`, `xoa` | Hoàn thành D1-06 (Sách) |
 
 ### 3.7. Services (`services/`)
 
 | Đường dẫn file | Logic nghiệp vụ đảm nhiệm | Các hàm nghiệp vụ chính | Ghi chú |
 | :--- | :--- | :--- | :--- |
 | `src/services/auth.service.js` | Đăng ký độc giả (Transaction), đăng nhập (kiểm tra khóa tài khoản BR-03, phân biệt hạn chế mượn BR-04), đổi mật khẩu, lấy hồ sơ hiện tại | `dangKyDocGia(duLieu)`, `dangNhap({ tenDangNhap, matKhau })`, `doiMatKhau(taiKhoanId, { matKhauHienTai, matKhauMoi })`, `layThongTinHienTai(taiKhoanId)` | Hoàn thành D1-05 |
-| `src/services/nhaXuatBan.service.js` | CRUD Nhà xuất bản, tự sinh `maNXB`, thống kê `soDauSach`, đồng bộ `maNXB` sang `sach`, chặn xóa vật lý khi có sách tham chiếu (BR-11) | `layDanhSachNXB(query)`, `layChiTietNXB(id)`, `taoNXB(duLieu, nguoiThucHienId)`, `capNhatNXB(id, duLieuCapNhat, nguoiThucHienId)`, `capNhatTrangThaiNXB(id, trangThai, nguoiThucHienId)`, `xoaNXB(id)` | Hoàn thành D1-06 (NXB) |
+| `src/services/nhaXuatBan.service.js` | CRUD Nhà xuất bản, tự sinh `maNXB`, kiểm tra trùng `tenNXB` không phân biệt hoa/thường, thống kê `soDauSach`, đồng bộ `maNXB` sang `sach`, chặn xóa vật lý khi có sách tham chiếu (BR-11) | `layDanhSachNXB(query)`, `layChiTietNXB(id)`, `taoNXB(duLieu, nguoiThucHienId)`, `capNhatNXB(id, duLieuCapNhat, nguoiThucHienId)`, `capNhatTrangThaiNXB(id, trangThai, nguoiThucHienId)`, `xoaNXB(id)` | Hoàn thành D1-06 (NXB) |
+| `src/services/sach.service.js` | CRUD Đầu sách, tự sinh `maSach`, kiểm tra NXB hoạt động, chống trùng đầu sách, điều chỉnh tồn kho thỏa bất biến `soQuyenKhaDung = tongSoQuyen - soQuyenDangMuon - soQuyenHuHong` kèm ghi `nhat_ky_he_thong` (BR-12), chặn xóa vật lý khi đã phát sinh giao dịch mượn (BR-11) | `layDanhSachSach(query)`, `layChiTietSach(id)`, `taoSach(duLieu, nguoiThucHienId)`, `capNhatSach(id, duLieuCapNhat, nguoiThucHienId)`, `dieuChinhTonKho(id, duLieuDieuChinh, user)`, `capNhatTrangThaiLuuThong(id, trangThaiLuuThong, nguoiThucHienId)`, `xoaSach(id)` | Hoàn thành D1-06 (Sách) |
 
 ### 3.8. Validators, Utils & Tests (`validators/`, `utils/`, `tests/`)
 
@@ -139,6 +153,7 @@ b2306586_ct449_hethongquanlymuonsach/
 | :--- | :--- | :--- | :--- |
 | `src/validators/auth.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Auth | `validateDangKyDocGia(body)`, `validateDangNhap(body)`, `validateDoiMatKhau(body)` | Hoàn thành D1-05 |
 | `src/validators/nhaXuatBan.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Nhà xuất bản | `validateTaoNXB(body)`, `validateCapNhatNXB(body)`, `validateCapNhatTrangThaiNXB(body)` | Hoàn thành D1-06 (NXB) |
+| `src/validators/sach.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Sách & Tồn kho | `validateTaoSach(body)`, `validateCapNhatSach(body)`, `validateDieuChinhTonKho(body)`, `validateCapNhatTrangThaiSach(body)` | Hoàn thành D1-06 (Sách) |
 | `src/utils/AppError.js` | Lớp lỗi nghiệp vụ tùy chỉnh chứa `statusCode`, `errorCode`, `details` | `class AppError` | Hoàn thành D1-05 |
 | `src/utils/seed.js` | Script khởi tạo dữ liệu mẫu idempotent (Cấu hình mặc định, Admin, Thủ thư, 2 Độc giả, 3 NXB, 5 Đầu sách) | `seedDatabase()`, chạy bằng `npm run seed` | Hoàn thành D1-02 |
 

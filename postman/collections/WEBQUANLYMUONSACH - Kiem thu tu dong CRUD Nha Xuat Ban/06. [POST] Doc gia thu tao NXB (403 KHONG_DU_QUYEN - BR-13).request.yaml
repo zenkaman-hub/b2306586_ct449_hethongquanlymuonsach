@@ -1,0 +1,26 @@
+$kind: http-request
+url: "{{baseUrl}}/publishers"
+method: POST
+headers:
+  Authorization: Bearer {{readerToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenNXB": "NXB Doc Gia Thu Tao",
+      "diaChi": "Can Tho"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan DOC_GIA tao NXB voi errorCode KHONG_DU_QUYEN', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');
+      });
+    language: text/javascript
+order: 6000

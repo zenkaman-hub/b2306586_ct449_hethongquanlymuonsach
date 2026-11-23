@@ -1,0 +1,47 @@
+$kind: http-request
+name: 06. [POST] Tao moi Dau sach thanh cong & Kiem tra cong thuc ton kho (201 Created)
+url: "{{baseUrl}}/books"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenSach": "{{tenSachTest}}",
+      "donGia": 125000,
+      "tongSoQuyen": 15,
+      "soQuyenHuHong": 2,
+      "namXuatBan": 2024,
+      "nhaXuatBanId": "{{activeNxbId}}",
+      "nguonGocTacGia": "Tran Van Kiem Thu",
+      "trangThaiLuuThong": "DANG_LUU_THONG"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const uniqueSuffix = Date.now();
+      pm.collectionVariables.set('tenSachTest', 'Cau Truc Du Lieu AutoTest ' + uniqueSuffix);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 201 Created', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      pm.test('Tu sinh maSach va tinh dung soQuyenKhaDung = tongSoQuyen (15) - soQuyenHuHong (2) = 13', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.maSach).to.match(/^S\d+$/);
+          pm.expect(json.data.tongSoQuyen).to.eql(15);
+          pm.expect(json.data.soQuyenDangMuon).to.eql(0);
+          pm.expect(json.data.soQuyenHuHong).to.eql(2);
+          pm.expect(json.data.soQuyenKhaDung).to.eql(13);
+          pm.expect(json.data.trangThaiLuuThong).to.eql('DANG_LUU_THONG');
+      });
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('createdSachId', json.data._id);
+          pm.collectionVariables.set('createdMaSach', json.data.maSach);
+      }
+    language: text/javascript
+order: 6000

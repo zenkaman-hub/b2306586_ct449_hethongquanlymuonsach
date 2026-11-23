@@ -2,6 +2,13 @@
 workspace:
   id: d301e51b-f5a4-4ec0-833c-1347659013ae
 
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../postman/collections/WEBQUANLYMUONSACH - Kiem thu tu dong CRUD Nha Xuat Ban: ebb01e18-f4ac-4f13-a494-c137a76f4495
+    ../postman/collections/WEBQUANLYMUONSACH - Kiem thu tu dong CRUD Sach & Ton Kho: 8f891e55-d70d-472c-96b8-50b70edfc09a
+
 # All resources in the `postman/` folder are automatically registered in Local View.
 # Point to additional files outside the `postman/` folder to register them individually. Example:
 #localResources:

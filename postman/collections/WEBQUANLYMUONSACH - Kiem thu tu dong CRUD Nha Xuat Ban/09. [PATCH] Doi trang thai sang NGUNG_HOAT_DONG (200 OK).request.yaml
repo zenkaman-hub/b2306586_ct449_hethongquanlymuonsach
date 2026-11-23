@@ -1,0 +1,25 @@
+$kind: http-request
+url: "{{baseUrl}}/publishers/{{createdNxbId}}/status"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThai": "NGUNG_HOAT_DONG"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Trang thai chuyen sang NGUNG_HOAT_DONG', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThai).to.eql('NGUNG_HOAT_DONG');
+      });
+    language: text/javascript
+order: 9000

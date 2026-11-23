@@ -1,0 +1,26 @@
+$kind: http-request
+name: 15. [PUT] Co tinh sua truc tiep tongSoQuyen qua API PUT (400 KHONG_SUA_TRUC_TIEP_TON_KHO)
+url: "{{baseUrl}}/books/{{createdSachId}}"
+method: PUT
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tongSoQuyen": 100
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan sua ton kho khong qua audit log voi ma loi KHONG_SUA_TRUC_TIEP_TON_KHO', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_SUA_TRUC_TIEP_TON_KHO');
+      });
+    language: text/javascript
+order: 15000
