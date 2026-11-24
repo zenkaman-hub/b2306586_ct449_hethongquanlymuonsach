@@ -1,0 +1,26 @@
+$kind: http-request
+name: 15. [PATCH /borrowing-status] Han che quyen muon nhung thieu lyDo (400 - BR-12)
+url: "{{baseUrl}}/readers/{{createdDocGiaId}}/borrowing-status"
+method: PATCH
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThaiQuyenMuon": "BI_HAN_CHE"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Bat buoc phai co lyDoHanCheMuon khi han che quyen muon', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('DU_LIEU_KHONG_HOP_LE');
+      });
+    language: text/javascript
+order: 15000

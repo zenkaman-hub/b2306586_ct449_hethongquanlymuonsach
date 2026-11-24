@@ -1,0 +1,27 @@
+$kind: http-request
+name: 20. [PATCH /account-status] Admin mo khoa lai tai khoan Nhan vien (200 OK)
+url: "{{baseUrl}}/employees/{{createdNhanVienId}}/account-status"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThai": "HOAT_DONG",
+      "lyDo": "Hoan tat ban giao"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Mo khoa tai khoan nhan vien thanh HOAT_DONG', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.taiKhoanId.trangThai).to.eql('HOAT_DONG');
+      });
+    language: text/javascript
+order: 20000

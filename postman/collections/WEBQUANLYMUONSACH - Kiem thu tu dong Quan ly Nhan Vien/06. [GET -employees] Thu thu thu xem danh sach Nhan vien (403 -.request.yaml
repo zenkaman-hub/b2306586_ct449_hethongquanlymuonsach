@@ -1,0 +1,19 @@
+$kind: http-request
+name: 06. [GET /employees] Thu thu thu xem danh sach Nhan vien (403 - Muc 3.2 PROJECT.md)
+url: "{{baseUrl}}/employees"
+method: GET
+headers:
+  Authorization: Bearer {{librarianToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan THU_THU quan ly nhan vien (chi QUAN_TRI duoc phep)', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');
+      });
+    language: text/javascript
+order: 6000

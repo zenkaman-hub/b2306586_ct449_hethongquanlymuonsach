@@ -4,6 +4,8 @@ const authRoutes = require('./routes/auth.route');
 const nhaXuatBanRoutes = require('./routes/nhaXuatBan.route');
 const sachRoutes = require('./routes/sach.route');
 const docGiaRoutes = require('./routes/docGia.route');
+const nhanVienRoutes = require('./routes/nhanVien.route');
+const phieuMuonRoutes = require('./routes/phieuMuon.route');
 const {
   notFoundHandler,
   errorHandler,
@@ -37,6 +39,14 @@ app.use('/api/sach', sachRoutes);
 // Routes quan ly Doc gia (ho tro ca /api/readers va /api/doc-gia)
 app.use('/api/readers', docGiaRoutes);
 app.use('/api/doc-gia', docGiaRoutes);
+
+// Routes quan ly Nhan vien (ho tro ca /api/employees va /api/nhan-vien)
+app.use('/api/employees', nhanVienRoutes);
+app.use('/api/nhan-vien', nhanVienRoutes);
+
+// Routes quan ly Phieu muon - tra sach (ho tro ca /api/loans va /api/phieu-muon)
+app.use('/api/loans', phieuMuonRoutes);
+app.use('/api/phieu-muon', phieuMuonRoutes);
 
 // Middleware xu ly route khong ton tai va xu ly loi tap trung
 app.use(notFoundHandler);

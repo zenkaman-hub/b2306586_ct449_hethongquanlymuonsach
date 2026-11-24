@@ -1,0 +1,27 @@
+$kind: http-request
+name: 17. [PATCH /account-status] Admin thu tu khoa tai khoan cua chinh minh (400 KHONG_THE_TU_KHOA_CHINH_MINH)
+url: "{{baseUrl}}/employees/{{adminNhanVienId}}/account-status"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThai": "BI_KHOA",
+      "lyDoKhoa": "Thu tu khoa chinh minh"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan Admin tu khoa tai khoan cua chinh minh', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_THE_TU_KHOA_CHINH_MINH');
+      });
+    language: text/javascript
+order: 17000

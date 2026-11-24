@@ -1,0 +1,30 @@
+$kind: http-request
+name: 10. [POST /employees] Tao Nhan vien trung tenDangNhap (409 TEN_DANG_NHAP_DA_TON_TAI)
+url: "{{baseUrl}}/employees"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "{{createdTenDangNhap}}",
+      "matKhau": "ThuThu@123",
+      "hoTenNV": "Nhan Vien Trung Ten",
+      "chucVu": "Thu thu",
+      "soDienThoai": "0944555666"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan trung tenDangNhap voi ma loi TEN_DANG_NHAP_DA_TON_TAI', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('TEN_DANG_NHAP_DA_TON_TAI');
+      });
+    language: text/javascript
+order: 10000

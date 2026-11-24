@@ -1,0 +1,28 @@
+$kind: http-request
+name: 16. [PATCH /borrowing-status] Han che quyen muon kem ly do (200 OK - BR-04 & BR-12)
+url: "{{baseUrl}}/readers/{{createdDocGiaId}}/borrowing-status"
+method: PATCH
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThaiQuyenMuon": "BI_HAN_CHE",
+      "lyDoHanCheMuon": "Tre han tra sach nhieu lan"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Chuyen trangThaiQuyenMuon sang BI_HAN_CHE va luu lyDoHanCheMuon', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThaiQuyenMuon).to.eql('BI_HAN_CHE');
+          pm.expect(json.data.lyDoHanCheMuon).to.eql('Tre han tra sach nhieu lan');
+      });
+    language: text/javascript
+order: 16000

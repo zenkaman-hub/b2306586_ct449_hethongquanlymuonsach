@@ -1,0 +1,29 @@
+$kind: http-request
+name: 14. [PUT /employees/:id] Admin cap nhat thong tin Nhan vien (200 OK)
+url: "{{baseUrl}}/employees/{{createdNhanVienId}}"
+method: PUT
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "hoTenNV": "Nguyen Van Minh",
+      "chucVu": "Thu thu chinh",
+      "diaChi": "Quan Ninh Kieu, TP. Can Tho"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Cap nhat chucVu va diaChi thanh cong', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.chucVu).to.eql('Thu thu chinh');
+          pm.expect(json.data.diaChi).to.eql('Quan Ninh Kieu, TP. Can Tho');
+      });
+    language: text/javascript
+order: 14000

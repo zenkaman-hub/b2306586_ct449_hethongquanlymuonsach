@@ -1,0 +1,19 @@
+$kind: http-request
+name: 08. [GET /readers] Doc gia thu xem danh sach tat ca doc gia (403 KHONG_DU_QUYEN - BR-02)
+url: "{{baseUrl}}/readers"
+method: GET
+headers:
+  Authorization: Bearer {{readerToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan DOC_GIA xem danh sach doc gia cua thu vien', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');
+      });
+    language: text/javascript
+order: 8000

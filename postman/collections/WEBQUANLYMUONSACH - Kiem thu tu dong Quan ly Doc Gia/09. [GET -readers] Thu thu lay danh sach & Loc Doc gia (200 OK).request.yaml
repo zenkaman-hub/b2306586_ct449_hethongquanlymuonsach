@@ -1,0 +1,26 @@
+$kind: http-request
+name: 09. [GET /readers] Thu thu lay danh sach & Loc Doc gia (200 OK)
+url: "{{baseUrl}}/readers?trangThaiHoSo=HOAT_DONG&coSachDangMuon=false&page=1&limit=10"
+method: GET
+headers:
+  Authorization: Bearer {{librarianToken}}
+queryParams:
+  trangThaiHoSo: HOAT_DONG
+  coSachDangMuon: "false"
+  page: "1"
+  limit: "10"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve danhSach doc gia kem taiKhoanId populate va phanTrang', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.danhSach).to.be.an('array');
+          pm.expect(json.data.phanTrang).to.be.an('object');
+          pm.expect(json.data.danhSach.length).to.be.above(0);
+      });
+    language: text/javascript
+order: 9000

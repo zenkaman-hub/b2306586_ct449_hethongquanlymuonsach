@@ -1,0 +1,26 @@
+$kind: http-request
+name: 06. [PUT /readers/me] Doc gia co tinh tu sua maDocGia (403 KHONG_DU_QUYEN - BR-13)
+url: "{{baseUrl}}/readers/me"
+method: PUT
+headers:
+  Authorization: Bearer {{readerToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "maDocGia": "DG9999"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan doc gia tu thay doi maDocGia voi ma loi KHONG_DU_QUYEN', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');
+      });
+    language: text/javascript
+order: 6000

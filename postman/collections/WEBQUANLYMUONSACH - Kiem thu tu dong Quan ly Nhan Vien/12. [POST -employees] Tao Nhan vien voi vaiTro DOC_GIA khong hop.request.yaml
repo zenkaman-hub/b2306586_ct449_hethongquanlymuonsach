@@ -1,0 +1,31 @@
+$kind: http-request
+name: 12. [POST /employees] Tao Nhan vien voi vaiTro DOC_GIA khong hop le (400 DU_LIEU_KHONG_HOP_LE)
+url: "{{baseUrl}}/employees"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "nv_sai_vaitro",
+      "matKhau": "ThuThu@123",
+      "vaiTro": "DOC_GIA",
+      "hoTenNV": "Nhan Vien Sai Vai Tro",
+      "chucVu": "Thu thu",
+      "soDienThoai": "0944777888"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan tao nhan vien voi vaiTro DOC_GIA', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('DU_LIEU_KHONG_HOP_LE');
+      });
+    language: text/javascript
+order: 12000

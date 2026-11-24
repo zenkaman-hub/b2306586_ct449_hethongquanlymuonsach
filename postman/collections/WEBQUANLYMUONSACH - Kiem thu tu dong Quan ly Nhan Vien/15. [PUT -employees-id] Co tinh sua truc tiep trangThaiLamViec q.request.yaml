@@ -1,0 +1,26 @@
+$kind: http-request
+name: 15. [PUT /employees/:id] Co tinh sua truc tiep trangThaiLamViec qua PUT (400 KHONG_SUA_TRUC_TIEP_TRANG_THAI)
+url: "{{baseUrl}}/employees/{{createdNhanVienId}}"
+method: PUT
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThaiLamViec": "NGHI_VIEC"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan sua truc tiep trangThaiLamViec qua PUT', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_SUA_TRUC_TIEP_TRANG_THAI');
+      });
+    language: text/javascript
+order: 15000

@@ -1,0 +1,19 @@
+$kind: http-request
+name: 13. [GET /readers/:id] Xem chi tiet Doc gia vua tao (200 OK)
+url: "{{baseUrl}}/readers/{{createdDocGiaId}}"
+method: GET
+headers:
+  Authorization: Bearer {{librarianToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve dung ho so chi tiet Doc gia vua tao', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data._id).to.eql(pm.collectionVariables.get('createdDocGiaId'));
+      });
+    language: text/javascript
+order: 13000

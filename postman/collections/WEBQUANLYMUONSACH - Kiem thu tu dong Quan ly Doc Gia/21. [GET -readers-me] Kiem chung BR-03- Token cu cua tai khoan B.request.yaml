@@ -1,0 +1,19 @@
+$kind: http-request
+name: "21. [GET /readers/me] Kiem chung BR-03: Token cu cua tai khoan BI_KHOA cung bi chan (403)"
+url: "{{baseUrl}}/readers/me"
+method: GET
+headers:
+  Authorization: Bearer {{newReaderToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Middleware authenticate chan luon token cu khi tai khoan BI_KHOA', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('TAI_KHOAN_BI_KHOA');
+      });
+    language: text/javascript
+order: 21000

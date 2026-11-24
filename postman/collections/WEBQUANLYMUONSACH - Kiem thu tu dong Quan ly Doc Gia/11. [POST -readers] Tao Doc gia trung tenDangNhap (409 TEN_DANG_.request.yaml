@@ -1,0 +1,30 @@
+$kind: http-request
+name: 11. [POST /readers] Tao Doc gia trung tenDangNhap (409 TEN_DANG_NHAP_DA_TON_TAI)
+url: "{{baseUrl}}/readers"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "{{createdTenDangNhap}}",
+      "matKhau": "DocGia@123",
+      "hoLot": "Nguyen",
+      "ten": "Trung Ten",
+      "dienThoai": "0977111222"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan trung tenDangNhap voi ma loi TEN_DANG_NHAP_DA_TON_TAI', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('TEN_DANG_NHAP_DA_TON_TAI');
+      });
+    language: text/javascript
+order: 11000
