@@ -65,6 +65,7 @@ Mọi lỗi từ hệ thống đều trả về định dạng JSON thống nh�
 | 1 | Xác thực & Phân quyền | `/api/auth` | [`docs/api/auth.md`](./api/auth.md) | Đã hoàn thành |
 | 2 | Nhà xuất bản | `/api/publishers` (alias `/api/nha-xuat-ban`) | [`docs/api/publishers.md`](./api/publishers.md) | Đã hoàn thành |
 | 3 | Sách & Quản lý Tồn kho | `/api/books` (alias `/api/sach`) | [`docs/api/books.md`](./api/books.md) | Đã hoàn thành |
+| 4 | Quản lý Độc giả | `/api/readers` (alias `/api/doc-gia`) | [`docs/api/readers.md`](./api/readers.md) | Đã hoàn thành |
 
 *(Khi xây dựng module mới, tạo file `docs/api/<ten-module>.md` và thêm 1 dòng vào bảng trên.)*
 

@@ -3,6 +3,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth.route');
 const nhaXuatBanRoutes = require('./routes/nhaXuatBan.route');
 const sachRoutes = require('./routes/sach.route');
+const docGiaRoutes = require('./routes/docGia.route');
 const {
   notFoundHandler,
   errorHandler,
@@ -32,6 +33,10 @@ app.use('/api/nha-xuat-ban', nhaXuatBanRoutes);
 // Routes quan ly Sach (ho tro ca /api/books va /api/sach)
 app.use('/api/books', sachRoutes);
 app.use('/api/sach', sachRoutes);
+
+// Routes quan ly Doc gia (ho tro ca /api/readers va /api/doc-gia)
+app.use('/api/readers', docGiaRoutes);
+app.use('/api/doc-gia', docGiaRoutes);
 
 // Middleware xu ly route khong ton tai va xu ly loi tap trung
 app.use(notFoundHandler);

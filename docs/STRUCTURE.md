@@ -130,6 +130,7 @@ b2306586_ct449_hethongquanlymuonsach/
 | `src/routes/auth.route.js` | `/api/auth` | `POST /register`, `POST /login`, `POST /logout`, `PUT /change-password`, `GET /me` | Hoàn thành D1-05 |
 | `src/routes/nhaXuatBan.route.js` | `/api/publishers` (và `/api/nha-xuat-ban`) | `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `PATCH /:id/status`, `DELETE /:id` | Hoàn thành D1-06 (NXB) |
 | `src/routes/sach.route.js` | `/api/books` (và `/api/sach`) | `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `PATCH /:id/inventory`, `PATCH /:id/status`, `DELETE /:id` | Hoàn thành D1-06 (Sách) |
+| `src/routes/docGia.route.js` | `/api/readers` (và `/api/doc-gia`) | `GET /me`, `PUT /me`, `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `PATCH /:id/borrowing-status`, `PATCH /:id/account-status`, `PATCH /:id/profile-status`, `DELETE /:id` | Hoàn thành D1-06 (Độc giả) |
 
 ### 3.6. Controllers (`controllers/`)
 
@@ -138,6 +139,7 @@ b2306586_ct449_hethongquanlymuonsach/
 | `src/controllers/auth.controller.js` | Xác thực & tài khoản cá nhân | `dangKy`, `dangNhap`, `dangXuat`, `doiMatKhau`, `layThongTinMe` | Hoàn thành D1-05 |
 | `src/controllers/nhaXuatBan.controller.js` | Quản lý Nhà xuất bản | `layDanhSach`, `layChiTiet`, `taoMoi`, `capNhat`, `doiTrangThai`, `xoa` | Hoàn thành D1-06 (NXB) |
 | `src/controllers/sach.controller.js` | Quản lý Đầu sách & Tồn kho | `layDanhSach`, `layChiTiet`, `taoMoi`, `capNhat`, `dieuChinhTonKho`, `doiTrangThai`, `xoa` | Hoàn thành D1-06 (Sách) |
+| `src/controllers/docGia.controller.js` | Quản lý Hồ sơ & Tài khoản Độc giả | `layHoSoCaNhan`, `capNhatHoSoCaNhan`, `layDanhSach`, `layChiTiet`, `taoMoi`, `capNhat`, `doiTrangThaiQuyenMuon`, `doiTrangThaiTaiKhoan`, `doiTrangThaiHoSo`, `xoa` | Hoàn thành D1-06 (Độc giả) |
 
 ### 3.7. Services (`services/`)
 
@@ -146,6 +148,7 @@ b2306586_ct449_hethongquanlymuonsach/
 | `src/services/auth.service.js` | Đăng ký độc giả (Transaction), đăng nhập (kiểm tra khóa tài khoản BR-03, phân biệt hạn chế mượn BR-04), đổi mật khẩu, lấy hồ sơ hiện tại | `dangKyDocGia(duLieu)`, `dangNhap({ tenDangNhap, matKhau })`, `doiMatKhau(taiKhoanId, { matKhauHienTai, matKhauMoi })`, `layThongTinHienTai(taiKhoanId)` | Hoàn thành D1-05 |
 | `src/services/nhaXuatBan.service.js` | CRUD Nhà xuất bản, tự sinh `maNXB`, kiểm tra trùng `tenNXB` không phân biệt hoa/thường, thống kê `soDauSach`, đồng bộ `maNXB` sang `sach`, chặn xóa vật lý khi có sách tham chiếu (BR-11) | `layDanhSachNXB(query)`, `layChiTietNXB(id)`, `taoNXB(duLieu, nguoiThucHienId)`, `capNhatNXB(id, duLieuCapNhat, nguoiThucHienId)`, `capNhatTrangThaiNXB(id, trangThai, nguoiThucHienId)`, `xoaNXB(id)` | Hoàn thành D1-06 (NXB) |
 | `src/services/sach.service.js` | CRUD Đầu sách, tự sinh `maSach`, kiểm tra NXB hoạt động, chống trùng đầu sách, điều chỉnh tồn kho thỏa bất biến `soQuyenKhaDung = tongSoQuyen - soQuyenDangMuon - soQuyenHuHong` kèm ghi `nhat_ky_he_thong` (BR-12), chặn xóa vật lý khi đã phát sinh giao dịch mượn (BR-11) | `layDanhSachSach(query)`, `layChiTietSach(id)`, `taoSach(duLieu, nguoiThucHienId)`, `capNhatSach(id, duLieuCapNhat, nguoiThucHienId)`, `dieuChinhTonKho(id, duLieuDieuChinh, user)`, `capNhatTrangThaiLuuThong(id, trangThaiLuuThong, nguoiThucHienId)`, `xoaSach(id)` | Hoàn thành D1-06 (Sách) |
+| `src/services/docGia.service.js` | CRUD Độc giả (Transaction tạo/xóa `tai_khoan` + `doc_gia`), hồ sơ cá nhân Độc giả (BR-02), hạn chế/mở quyền mượn (BR-04, BR-12), khóa/mở tài khoản (BR-03, BR-12), ngừng hoạt động hồ sơ và chặn xóa vật lý khi có giao dịch (BR-11) | `layDanhSachDocGia(query)`, `layChiTietDocGia(id)`, `layHoSoCaNhanDocGia(taiKhoanId)`, `taoDocGia(duLieu, nguoiThucHienId)`, `capNhatDocGia(docGiaId, duLieuCapNhat, nguoiThucHienId)`, `capNhatHoSoCaNhanDocGia(taiKhoanId, duLieuCapNhat)`, `capNhatQuyenMuonDocGia(id, payload, user)`, `capNhatTrangThaiTaiKhoanDocGia(id, payload, user)`, `capNhatTrangThaiHoSoDocGia(id, payload, user)`, `xoaDocGia(id)` | Hoàn thành D1-06 (Độc giả) |
 
 ### 3.8. Validators, Utils & Tests (`validators/`, `utils/`, `tests/`)
 
@@ -154,6 +157,7 @@ b2306586_ct449_hethongquanlymuonsach/
 | `src/validators/auth.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Auth | `validateDangKyDocGia(body)`, `validateDangNhap(body)`, `validateDoiMatKhau(body)` | Hoàn thành D1-05 |
 | `src/validators/nhaXuatBan.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Nhà xuất bản | `validateTaoNXB(body)`, `validateCapNhatNXB(body)`, `validateCapNhatTrangThaiNXB(body)` | Hoàn thành D1-06 (NXB) |
 | `src/validators/sach.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Sách & Tồn kho | `validateTaoSach(body)`, `validateCapNhatSach(body)`, `validateDieuChinhTonKho(body)`, `validateCapNhatTrangThaiSach(body)` | Hoàn thành D1-06 (Sách) |
+| `src/validators/docGia.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Độc giả | `validateTaoDocGia(body)`, `validateCapNhatDocGia(body, choPhepSuaMaDocGia)`, `validateCapNhatQuyenMuon(body)`, `validateCapNhatTrangThaiTaiKhoan(body)`, `validateCapNhatTrangThaiHoSo(body)` | Hoàn thành D1-06 (Độc giả) |
 | `src/utils/AppError.js` | Lớp lỗi nghiệp vụ tùy chỉnh chứa `statusCode`, `errorCode`, `details` | `class AppError` | Hoàn thành D1-05 |
 | `src/utils/seed.js` | Script khởi tạo dữ liệu mẫu idempotent (Cấu hình mặc định, Admin, Thủ thư, 2 Độc giả, 3 NXB, 5 Đầu sách) | `seedDatabase()`, chạy bằng `npm run seed` | Hoàn thành D1-02 |
 
