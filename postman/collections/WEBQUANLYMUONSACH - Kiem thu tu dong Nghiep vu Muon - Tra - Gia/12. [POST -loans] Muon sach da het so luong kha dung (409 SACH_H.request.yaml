@@ -1,0 +1,29 @@
+$kind: http-request
+name: 12. [POST /loans] Muon sach da het so luong kha dung (409 SACH_HET_SO_LUONG_KHA_DUNG - BR-05)
+url: "{{baseUrl}}/loans"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "docGiaId": "{{testDocGiaId}}",
+      "danhSachSach": [
+        { "sachId": "{{sachHetKhoId}}" }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict (BR-05)', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan muon sach het ban kha dung voi ma loi SACH_HET_SO_LUONG_KHA_DUNG', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('SACH_HET_SO_LUONG_KHA_DUNG');
+      });
+    language: text/javascript
+order: 12000

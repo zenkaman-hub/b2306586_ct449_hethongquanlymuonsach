@@ -1,0 +1,30 @@
+$kind: http-request
+name: 09. [POST /books] Tao Sach Het Kho (soQuyenKhaDung = 0 de test BR-05)
+url: "{{baseUrl}}/books"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenSach": "Sach Het Kho AutoTest - {{$timestamp}}",
+      "donGia": 80000,
+      "tongSoQuyen": 1,
+      "soQuyenHuHong": 1,
+      "namXuatBan": 2024,
+      "nhaXuatBanId": "{{activeNxbId}}",
+      "nguonGocTacGia": "Tac Gia Het Kho"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Tao Sach Het Kho thanh cong (soQuyenKhaDung = 0)', function () {
+          pm.response.to.have.status(201);
+          const json = pm.response.json();
+          pm.expect(json.data.soQuyenKhaDung).to.eql(0);
+          pm.collectionVariables.set('sachHetKhoId', json.data._id);
+      });
+    language: text/javascript
+order: 9000

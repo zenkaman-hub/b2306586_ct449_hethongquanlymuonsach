@@ -6,6 +6,7 @@ const sachRoutes = require('./routes/sach.route');
 const docGiaRoutes = require('./routes/docGia.route');
 const nhanVienRoutes = require('./routes/nhanVien.route');
 const phieuMuonRoutes = require('./routes/phieuMuon.route');
+const khoanPhatRoutes = require('./routes/khoanPhat.route');
 const {
   notFoundHandler,
   errorHandler,
@@ -47,6 +48,10 @@ app.use('/api/nhan-vien', nhanVienRoutes);
 // Routes quan ly Phieu muon - tra sach (ho tro ca /api/loans va /api/phieu-muon)
 app.use('/api/loans', phieuMuonRoutes);
 app.use('/api/phieu-muon', phieuMuonRoutes);
+
+// Routes quan ly Khoan phat & boi thuong (ho tro ca /api/fines va /api/khoan-phat)
+app.use('/api/fines', khoanPhatRoutes);
+app.use('/api/khoan-phat', khoanPhatRoutes);
 
 // Middleware xu ly route khong ton tai va xu ly loi tap trung
 app.use(notFoundHandler);

@@ -1,0 +1,25 @@
+$kind: http-request
+name: 05. [POST /auth/login] Dang nhap Doc gia test (Lay testReaderToken)
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "{{testTenDangNhap}}",
+      "matKhau": "DocGia@123"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      if (json.data && json.data.token) {
+          pm.collectionVariables.set('testReaderToken', json.data.token);
+      }
+    language: text/javascript
+order: 5000

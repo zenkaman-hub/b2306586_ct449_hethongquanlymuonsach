@@ -1,0 +1,29 @@
+$kind: http-request
+name: 17. [POST /loans] Thu muon lai cuon sach Doc gia dang giu chua tra (409 DOC_GIA_DANG_MUON_DAU_SACH_NAY)
+url: "{{baseUrl}}/loans"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "docGiaId": "{{testDocGiaId}}",
+      "danhSachSach": [
+        { "sachId": "{{sach1Id}}" }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan muon trung dau sach dang giu chua tra', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('DOC_GIA_DANG_MUON_DAU_SACH_NAY');
+      });
+    language: text/javascript
+order: 17000

@@ -1,0 +1,34 @@
+$kind: http-request
+name: 13. [POST /loans] Muon vuot gioi han soSachMuonToiDa > 5 cuon (400 VUOT_GIOI_HAN_SO_SACH_MUON - BR-06)
+url: "{{baseUrl}}/loans"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "docGiaId": "{{testDocGiaId}}",
+      "danhSachSach": [
+        { "maSach": "S0001" },
+        { "maSach": "S0002" },
+        { "maSach": "S0003" },
+        { "maSach": "S0004" },
+        { "maSach": "S0005" },
+        { "sachId": "{{sach1Id}}" }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request (BR-06)', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan muon vuot 5 cuon voi ma loi VUOT_GIOI_HAN_SO_SACH_MUON', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('VUOT_GIOI_HAN_SO_SACH_MUON');
+      });
+    language: text/javascript
+order: 13000

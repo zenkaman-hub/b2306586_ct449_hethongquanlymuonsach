@@ -1,0 +1,27 @@
+$kind: http-request
+name: 15. [PATCH /loans/:id/cancel] Xac nhan Huy phieu muon lap nham (200 OK -> DA_HUY)
+url: "{{baseUrl}}/loans/{{phieuHuyId}}/cancel"
+method: PATCH
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "lyDoHuy": "Thu thu chon nham dau sach khi lap phieu"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Phieu chuyen sang DA_HUY va hoan soSachDangMuon = 0', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThai).to.eql('DA_HUY');
+          pm.expect(json.data.docGiaId.soSachDangMuon).to.eql(0);
+      });
+    language: text/javascript
+order: 15000

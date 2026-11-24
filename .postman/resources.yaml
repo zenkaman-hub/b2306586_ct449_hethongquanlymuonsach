@@ -10,6 +10,7 @@ cloudResources:
     ../postman/collections/WEBQUANLYMUONSACH - Kiem thu tu dong Quan ly Nhan Vien: 2d276400-cb93-4b2d-a0df-30f21f287dcf
     ../postman/collections/WEBQUANLYMUONSACH - Kiem thu tu dong Quan ly Doc Gia: 8d1eef36-24eb-4f25-bd37-f8a606405ae5
     ../postman/collections/WEBQUANLYMUONSACH - Kiem thu tu dong CRUD Sach & Ton Kho: 306f3645-d362-4af2-97a1-0ee02b641443
+    ../postman/collections/WEBQUANLYMUONSACH - Kiem thu tu dong Nghiep vu Muon - Tra - Gia: f3e47c51-5468-42bf-bc42-1f1ef604542d
 
 # All resources in the `postman/` folder are automatically registered in Local View.
 # Point to additional files outside the `postman/` folder to register them individually. Example:

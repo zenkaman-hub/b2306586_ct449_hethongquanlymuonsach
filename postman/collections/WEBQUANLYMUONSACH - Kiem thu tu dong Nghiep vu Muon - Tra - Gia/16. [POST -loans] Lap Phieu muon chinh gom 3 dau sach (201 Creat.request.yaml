@@ -1,0 +1,43 @@
+$kind: http-request
+name: 16. [POST /loans] Lap Phieu muon chinh gom 3 dau sach (201 Created - BR-07 & BR-14)
+url: "{{baseUrl}}/loans"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "docGiaId": "{{testDocGiaId}}",
+      "ghiChu": "Phieu muon 3 cuon test tra tung phan, gia han, hu hong va mat sach",
+      "danhSachSach": [
+        { "sachId": "{{sach1Id}}" },
+        { "sachId": "{{sach2Id}}" },
+        { "sachId": "{{sach3Id}}" }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 201 Created', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      pm.test('Tao phieu muon 3 cuon sach, trangThai DANG_MO, soSachDangMuon = 3', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThai).to.eql('DANG_MO');
+          pm.expect(json.data.chiTietMuon.length).to.eql(3);
+          pm.expect(json.data.docGiaId.soSachDangMuon).to.eql(3);
+      });
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('phieuChinhId', json.data._id);
+          const ct1 = json.data.chiTietMuon.find(c => c.sachId === pm.collectionVariables.get('sach1Id'));
+          const ct2 = json.data.chiTietMuon.find(c => c.sachId === pm.collectionVariables.get('sach2Id'));
+          const ct3 = json.data.chiTietMuon.find(c => c.sachId === pm.collectionVariables.get('sach3Id'));
+          if (ct1) pm.collectionVariables.set('ctSach1Id', ct1._id);
+          if (ct2) pm.collectionVariables.set('ctSach2Id', ct2._id);
+          if (ct3) pm.collectionVariables.set('ctSach3Id', ct3._id);
+      }
+    language: text/javascript
+order: 16000

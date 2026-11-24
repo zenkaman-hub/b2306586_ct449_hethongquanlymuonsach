@@ -1,0 +1,35 @@
+$kind: http-request
+name: "22. [POST /loans/:id/return] Tra tung phan: Tra truoc Cuon sach 1 NGUYEN_VEN (200 OK - BR-08)"
+url: "{{baseUrl}}/loans/{{phieuChinhId}}/return"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "ghiChu": "Doc gia tra truoc cuon sach 1 nguyen ven",
+      "danhSachTra": [
+        {
+          "chiTietMuonId": "{{ctSach1Id}}",
+          "tinhTrangKhiTra": "NGUYEN_VEN"
+        }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      const ct1 = json.data.chiTietMuon.find(c => c._id === pm.collectionVariables.get('ctSach1Id'));
+      pm.test('Cuon 1 chuyen sang DA_TRA_DUNG_HAN, phieu van DANG_MO, soSachDangMuon giam con 2 (BR-08)', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(ct1.trangThai).to.eql('DA_TRA_DUNG_HAN');
+          pm.expect(json.data.trangThai).to.eql('DANG_MO');
+          pm.expect(json.data.docGiaId.soSachDangMuon).to.eql(2);
+      });
+    language: text/javascript
+order: 22000
