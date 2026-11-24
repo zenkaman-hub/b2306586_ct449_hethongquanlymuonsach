@@ -1,0 +1,52 @@
+$kind: http-request
+name: 10. [POST /loans/:id/return] Tra 3 cuon phat sinh 3 Khoan Phat (30k, 100k, 150k => Tong 280k)
+url: "{{baseUrl}}/loans/{{phieuMuonId}}/return"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "ghiChu": "Tra 3 cuon phat sinh 3 khoan phat de test thu tien, mien phat va huy phat",
+      "danhSachTra": [
+        {
+          "chiTietMuonId": "{{ct1Id}}",
+          "tinhTrangKhiTra": "HU_HONG_NHE",
+          "moTaHuHong": "Ghi nham hu hong nhe (de test HUY_PHAT)",
+          "soTienBoiThuong": 30000
+        },
+        {
+          "chiTietMuonId": "{{ct2Id}}",
+          "tinhTrangKhiTra": "HU_HONG_NANG",
+          "moTaHuHong": "Rach bia va 15 trang (de test THANH_TOAN 1 phan & toan bo)"
+        },
+        {
+          "chiTietMuonId": "{{ct3Id}}",
+          "tinhTrangKhiTra": "MAT",
+          "moTaHuHong": "Mat sach (de test MIEN_PHAT)"
+        }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Phat sinh 3 khoan phat (tong 280000 VND) va han che quyen muon doc gia', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.danhSachKhoanPhat.length).to.eql(3);
+          pm.expect(json.data.docGiaId.tongTienPhatChuaTra).to.eql(280000);
+          pm.expect(json.data.docGiaId.trangThaiQuyenMuon).to.eql('BI_HAN_CHE');
+      });
+      const kp1 = json.data.danhSachKhoanPhat.find(k => k.chiTietMuonId === pm.collectionVariables.get('ct1Id'));
+      const kp2 = json.data.danhSachKhoanPhat.find(k => k.chiTietMuonId === pm.collectionVariables.get('ct2Id'));
+      const kp3 = json.data.danhSachKhoanPhat.find(k => k.chiTietMuonId === pm.collectionVariables.get('ct3Id'));
+      if (kp1) pm.collectionVariables.set('kp1Id', kp1._id);
+      if (kp2) pm.collectionVariables.set('kp2Id', kp2._id);
+      if (kp3) pm.collectionVariables.set('kp3Id', kp3._id);
+    language: text/javascript
+order: 10000

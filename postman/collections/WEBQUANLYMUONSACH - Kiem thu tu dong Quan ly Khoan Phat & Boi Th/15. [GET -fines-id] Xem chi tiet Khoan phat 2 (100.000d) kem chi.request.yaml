@@ -1,0 +1,21 @@
+$kind: http-request
+name: 15. [GET /fines/:id] Xem chi tiet Khoan phat 2 (100.000d) kem chiTietSach & soTienConNo
+url: "{{baseUrl}}/fines/{{kp2Id}}"
+method: GET
+headers:
+  Authorization: Bearer {{librarianToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Hien thi day du chiTietSach va soTienConNo = 100000', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.soTienPhat).to.eql(100000);
+          pm.expect(json.data.soTienConNo).to.eql(100000);
+          pm.expect(json.data.chiTietSach).to.be.an('object');
+      });
+    language: text/javascript
+order: 15000

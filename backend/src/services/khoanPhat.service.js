@@ -96,9 +96,34 @@ const kiemTraMoLaiQuyenMuonSauKhiHetNo = async (docGia, user, session = null) =>
   const conSachQuaHan = await phieuQuaHanQuery.lean();
 
   if (!conSachQuaHan) {
+    const duLieuTruocQuyenMuon = {
+      trangThaiQuyenMuon: docGia.trangThaiQuyenMuon,
+      lyDoHanCheMuon: docGia.lyDoHanCheMuon,
+    };
+
     docGia.trangThaiQuyenMuon = TRANG_THAI_QUYEN_MUON.DUOC_MUON;
     docGia.lyDoHanCheMuon = null;
     docGia.nguoiCapNhatId = user.taiKhoanId;
+
+    await NhatKyHeThong.create(
+      [
+        {
+          hanhDong: HANH_DONG_NHAT_KY.MO_QUYEN_MUON,
+          doiTuongCollection: TEN_COLLECTION.DOC_GIA,
+          doiTuongId: docGia._id,
+          nguoiThucHienId: user.taiKhoanId,
+          vaiTroNguoiThucHien: user.vaiTro,
+          duLieuTruoc: duLieuTruocQuyenMuon,
+          duLieuSau: {
+            trangThaiQuyenMuon: TRANG_THAI_QUYEN_MUON.DUOC_MUON,
+            lyDoHanCheMuon: null,
+          },
+          lyDo: 'Tu dong mo lai quyen muon sau khi doc gia hoan tat toan bo khoan phat',
+          thoiDiem: new Date(),
+        },
+      ],
+      session ? { session } : {}
+    );
   }
 };
 
@@ -177,10 +202,18 @@ const ganThongTinChiTietSachChoKhoanPhat = (khoanPhat) => {
         }
       : khoanPhat.phieuMuonId;
 
-  const soTienConNo = Math.max(
-    0,
-    (khoanPhat.soTienPhat || 0) - (khoanPhat.soTienDaThanhToan || 0)
-  );
+  const daKetThuc = [
+    TRANG_THAI_KHOAN_PHAT.DA_THANH_TOAN,
+    TRANG_THAI_KHOAN_PHAT.DUOC_MIEN,
+    TRANG_THAI_KHOAN_PHAT.DA_HUY,
+  ].includes(khoanPhat.trangThai);
+
+  const soTienConNo = daKetThuc
+    ? 0
+    : Math.max(
+        0,
+        (khoanPhat.soTienPhat || 0) - (khoanPhat.soTienDaThanhToan || 0)
+      );
 
   return {
     ...khoanPhat,
@@ -450,9 +483,12 @@ const thucThiThanhToanPhat = async (
       : TRANG_THAI_KHOAN_PHAT.THANH_TOAN_MOT_PHAN;
   khoanPhat.nguoiXuLyId = nhanVien._id;
   khoanPhat.ngayXuLy = ngayXuLy;
-  khoanPhat.ghiChuXuLy =
+  const ghiChuDotThu =
     ghiChuXuLy ||
     `Xac nhan thu ${soTienThucThu} VND (Tong da thu: ${khoanPhat.soTienDaThanhToan}/${khoanPhat.soTienPhat} VND)`;
+  khoanPhat.ghiChuXuLy = khoanPhat.ghiChuXuLy
+    ? `${khoanPhat.ghiChuXuLy} | ${ghiChuDotThu}`
+    : ghiChuDotThu;
 
   await khoanPhat.save(session ? { session } : {});
 

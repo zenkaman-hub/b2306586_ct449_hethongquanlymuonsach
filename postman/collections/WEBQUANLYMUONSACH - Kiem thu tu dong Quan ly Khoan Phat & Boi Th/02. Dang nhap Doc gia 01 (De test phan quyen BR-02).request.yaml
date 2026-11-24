@@ -1,0 +1,24 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "docgia01",
+      "matKhau": "DocGia@123"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      if (json.data && json.data.token) {
+          pm.collectionVariables.set('otherReaderToken', json.data.token);
+      }
+    language: text/javascript
+order: 2000

@@ -134,6 +134,7 @@ b2306586_ct449_hethongquanlymuonsach/
 | `src/routes/nhanVien.route.js` | `/api/employees` (và `/api/nhan-vien`) | `GET /me`, `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `PATCH /:id/work-status`, `PATCH /:id/account-status`, `DELETE /:id` | Hoàn thành D1-06 (Nhân viên) |
 | `src/routes/phieuMuon.route.js` | `/api/loans` (và `/api/phieu-muon`) | `GET /my-history`, `GET /overdue-items`, `GET /`, `GET /:id`, `POST /`, `POST /:id/return`, `POST /:id/extend`, `PATCH /:id/cancel` | Hoàn thành D2-02..D2-05 (Mượn/Trả) |
 | `src/routes/khoanPhat.route.js` | `/api/fines` (và `/api/khoan-phat`) | `GET /my-fines`, `GET /`, `GET /:id`, `POST /:id/pay`, `PATCH /:id/waive`, `PATCH /:id/cancel` | Hoàn thành D2-04..D2-05 (Khoản phạt) |
+| `src/routes/heThong.route.js` | `/api/settings`, `/api/audit-logs`, `/api/dashboard` (và `/api/cau-hinh`, `/api/nhat-ky`, `/api/thong-ke`) | `GET /settings`, `PUT /settings`, `GET /audit-logs`, `GET /audit-logs/:id`, `GET /dashboard/summary` | Hoàn thành Cấu hình, Nhật ký & Dashboard |
 
 ### 3.6. Controllers (`controllers/`)
 
@@ -146,6 +147,7 @@ b2306586_ct449_hethongquanlymuonsach/
 | `src/controllers/nhanVien.controller.js` | Quản lý Hồ sơ & Tài khoản Nhân viên (`QUAN_TRI`) | `layHoSoCaNhan`, `layDanhSach`, `layChiTiet`, `taoMoi`, `capNhat`, `doiTrangThaiLamViec`, `doiTrangThaiTaiKhoan`, `xoa` | Hoàn thành D1-06 (Nhân viên) |
 | `src/controllers/phieuMuon.controller.js` | Quản lý Phiếu mượn, Trả sách, Gia hạn & Quá hạn | `layLichSuCaNhan`, `layDanhSachSachQuaHan`, `layDanhSach`, `layChiTiet`, `lapPhieuMuon`, `traSach`, `giaHanMuon`, `huyPhieuMuon` | Hoàn thành D2-02..D2-05 (Mượn/Trả) |
 | `src/controllers/khoanPhat.controller.js` | Quản lý Khoản phạt, Thu tiền, Miễn phạt & Hủy phạt | `layDanhSachCaNhan`, `layDanhSach`, `layChiTiet`, `thanhToan`, `mienPhat`, `huyPhat` | Hoàn thành D2-04..D2-05 (Khoản phạt) |
+| `src/controllers/heThong.controller.js` | Cấu hình thư viện, Nhật ký hệ thống & Thống kê Dashboard | `layCauHinh`, `capNhatCauHinh`, `layDanhSachNhatKy`, `layChiTietNhatKy`, `layThongKeDashboard` | Hoàn thành Cấu hình, Nhật ký & Dashboard |
 
 ### 3.7. Services (`services/`)
 
@@ -158,6 +160,7 @@ b2306586_ct449_hethongquanlymuonsach/
 | `src/services/nhanVien.service.js` | CRUD Nhân viên dành cho `QUAN_TRI` (Transaction tạo/xóa `tai_khoan` + `nhan_vien`), chống tự khóa/tự xóa/tự hạ quyền Admin, chuyển `NGHI_VIEC` tự động khóa tài khoản + ghi `nhat_ky_he_thong` (BR-12), chặn xóa vật lý khi đã xử lý giao dịch (BR-11) | `layDanhSachNhanVien(query)`, `layChiTietNhanVien(id)`, `layHoSoCaNhanNhanVien(taiKhoanId)`, `taoNhanVien(duLieu, nguoiThucHienId)`, `capNhatNhanVien(id, duLieuCapNhat, user)`, `capNhatTrangThaiLamViecNhanVien(id, payload, user)`, `capNhatTrangThaiTaiKhoanNhanVien(id, payload, user)`, `xoaNhanVien(id, user)` | Hoàn thành D1-06 (Nhân viên) |
 | `src/services/phieuMuon.service.js` | Lập phiếu mượn nhiều sách nguyên tử (Transaction, BR-01, BR-05, BR-06, BR-07, BR-14), trả sách toàn phần/từng phần (BR-08), đồng bộ quá hạn (BR-09), xử lý hư hỏng/mất sách & tự động tạo khoản phạt (BR-10), gia hạn mượn, hủy phiếu lập nhầm, ghi `nhat_ky_he_thong` (BR-12) | `layDanhSachPhieuMuon(query)`, `layLichSuMuonCuaDocGia(user, query)`, `layDanhSachSachQuaHan(query)`, `layChiTietPhieuMuon(id, user)`, `lapPhieuMuon(duLieu, user)`, `traSach(phieuMuonId, duLieuTra, user)`, `giaHanMuon(phieuMuonId, duLieuGiaHan, user)`, `huyPhieuMuon(phieuMuonId, payload, user)` | Hoàn thành D2-02..D2-05 (Mượn/Trả) |
 | `src/services/khoanPhat.service.js` | Xem khoản phạt cá nhân (BR-02) & toàn hệ thống, thu tiền phạt toàn bộ/một phần (Transaction), miễn phạt (`DUOC_MIEN`), hủy phạt ghi sai (`DA_HUY` - BR-11), tự động giảm `tongTienPhatChuaTra`, mở lại quyền mượn `DUOC_MUON` khi hết nợ, đồng bộ `chiTietMuon.trangThai = DA_XU_LY`, ghi `nhat_ky_he_thong` (BR-12) | `layDanhSachKhoanPhat(query)`, `layDanhSachKhoanPhatCaNhan(user, query)`, `layChiTietKhoanPhat(id, user)`, `thanhToanKhoanPhat(id, payload, user)`, `mienKhoanPhat(id, payload, user)`, `huyKhoanPhat(id, payload, user)` | Hoàn thành D2-04..D2-05 (Khoản phạt) |
+| `src/services/heThong.service.js` | Quản lý cấu hình thư viện `MAC_DINH` (`QUAN_TRI` cập nhật + ghi `nhat_ky_he_thong` `CAP_NHAT_CAU_HINH`), tra cứu & lọc `nhat_ky_he_thong` bất biến, tổng hợp thống kê Dashboard (Task D3-02) | `layCauHinhThuVien()`, `capNhatCauHinhThuVien(payload, user)`, `layDanhSachNhatKyHeThong(query)`, `layChiTietNhatKyHeThong(id)`, `layThongKeDashboard()` | Hoàn thành Cấu hình, Nhật ký & Dashboard |
 
 ### 3.8. Validators, Utils & Tests (`validators/`, `utils/`, `tests/`)
 
@@ -170,6 +173,7 @@ b2306586_ct449_hethongquanlymuonsach/
 | `src/validators/nhanVien.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Nhân viên | `validateTaoNhanVien(body)`, `validateCapNhatNhanVien(body)`, `validateCapNhatTrangThaiLamViec(body)`, `validateCapNhatTrangThaiTaiKhoanNV(body)` | Hoàn thành D1-06 (Nhân viên) |
 | `src/validators/phieuMuon.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Mượn – Trả Sách | `validateLapPhieuMuon(body)`, `validateTraSach(body)`, `validateGiaHanMuon(body)`, `validateHuyPhieuMuon(body)` | Hoàn thành D2-02..D2-05 (Mượn/Trả) |
 | `src/validators/khoanPhat.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào cho module Khoản phạt | `validateThanhToanPhat(body)`, `validateMienHoacHuyPhat(body, tenThaoTac)` | Hoàn thành D2-04..D2-05 (Khoản phạt) |
+| `src/validators/heThong.validator.js` | Kiểm tra hợp lệ dữ liệu đầu vào khi cập nhật cấu hình thư viện | `validateCapNhatCauHinh(body)` | Hoàn thành Cấu hình |
 | `src/utils/AppError.js` | Lớp lỗi nghiệp vụ tùy chỉnh chứa `statusCode`, `errorCode`, `details` | `class AppError` | Hoàn thành D1-05 |
 | `src/utils/seed.js` | Script khởi tạo dữ liệu mẫu idempotent (Cấu hình mặc định, Admin, Thủ thư, 2 Độc giả, 3 NXB, 5 Đầu sách) | `seedDatabase()`, chạy bằng `npm run seed` | Hoàn thành D1-02 |
 

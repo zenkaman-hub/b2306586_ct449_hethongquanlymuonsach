@@ -1,0 +1,19 @@
+$kind: http-request
+name: 12. [GET /fines] Doc gia thu xem danh sach khoan phat toan thu vien (403 KHONG_DU_QUYEN - BR-02)
+url: "{{baseUrl}}/fines"
+method: GET
+headers:
+  Authorization: Bearer {{testReaderToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan DOC_GIA xem danh sach phat chung', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');
+      });
+    language: text/javascript
+order: 12000

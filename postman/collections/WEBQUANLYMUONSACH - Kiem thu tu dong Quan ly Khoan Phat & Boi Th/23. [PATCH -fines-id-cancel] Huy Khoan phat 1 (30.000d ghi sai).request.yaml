@@ -1,0 +1,28 @@
+$kind: http-request
+name: 23. [PATCH /fines/:id/cancel] Huy Khoan phat 1 (30.000d ghi sai) thanh cong -> DA_HUY (200 OK - BR-11 & BR-12)
+url: "{{baseUrl}}/fines/{{kp1Id}}/cancel"
+method: PATCH
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "ghiChuXuLy": "Huy khoan phat do thu thu ghi nham muc boi thuong hu hong nhe"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Chuyen sang DA_HUY va giam tongTienPhatChuaTra con 150000', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThai).to.eql('DA_HUY');
+          pm.expect(json.data.docGiaId.tongTienPhatChuaTra).to.eql(150000);
+          pm.expect(json.data.docGiaId.trangThaiQuyenMuon).to.eql('BI_HAN_CHE');
+      });
+    language: text/javascript
+order: 23000

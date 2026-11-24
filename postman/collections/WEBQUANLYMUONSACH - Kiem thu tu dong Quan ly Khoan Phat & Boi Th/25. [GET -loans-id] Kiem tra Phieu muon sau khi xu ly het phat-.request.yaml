@@ -1,0 +1,21 @@
+$kind: http-request
+name: "25. [GET /loans/:id] Kiem tra Phieu muon sau khi xu ly het phat: Ca 2 dong HU_HONG & MAT_SACH deu DA_XU_LY"
+url: "{{baseUrl}}/loans/{{phieuMuonId}}"
+method: GET
+headers:
+  Authorization: Bearer {{librarianToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      const ct2 = json.data.chiTietMuon.find(c => c._id === pm.collectionVariables.get('ct2Id'));
+      const ct3 = json.data.chiTietMuon.find(c => c._id === pm.collectionVariables.get('ct3Id'));
+      pm.test('Ca 2 chiTietMuon vi pham deu da chuyen sang DA_XU_LY (Muc 5.8 & 7.3 PROJECT.md)', function () {
+          pm.expect(ct2.trangThai).to.eql('DA_XU_LY');
+          pm.expect(ct3.trangThai).to.eql('DA_XU_LY');
+      });
+    language: text/javascript
+order: 25000

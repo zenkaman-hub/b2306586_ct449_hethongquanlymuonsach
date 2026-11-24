@@ -1,0 +1,29 @@
+$kind: http-request
+name: 24. [PATCH /fines/:id/waive] Mien Khoan phat 3 (150.000d) -> DUOC_MIEN, Tong no = 0 & Tu dong MO_QUYEN_MUON!
+url: "{{baseUrl}}/fines/{{kp3Id}}/waive"
+method: PATCH
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "ghiChuXuLy": "Doc gia da mua den cuon sach moi cung ban in cho thu vien"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Chuyen sang DUOC_MIEN, chiTietSach -> DA_XU_LY, tongTienPhatChuaTra = 0 va trangThaiQuyenMuon -> DUOC_MUON', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThai).to.eql('DUOC_MIEN');
+          pm.expect(json.data.chiTietSach.trangThai).to.eql('DA_XU_LY');
+          pm.expect(json.data.docGiaId.tongTienPhatChuaTra).to.eql(0);
+          pm.expect(json.data.docGiaId.trangThaiQuyenMuon).to.eql('DUOC_MUON');
+      });
+    language: text/javascript
+order: 24000

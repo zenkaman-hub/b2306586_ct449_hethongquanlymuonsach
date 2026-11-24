@@ -1,0 +1,22 @@
+$kind: collection
+name: WEBQUANLYMUONSACH - Kiem thu tu dong Quan ly Khoan Phat & Boi Thuong
+description: Bo kiem thu tu dong toan dien (25 kich ban) cho module Quan ly Khoan Phat & Boi Thuong (/api/fines) theo PROJECT.md (Muc 5.5, 5.7, 5.8, 7.5, BR-02, BR-11, BR-12, BR-13, BR-14).
+variables:
+  baseUrl: http://localhost:5000/api
+  librarianToken: ""
+  otherReaderToken: ""
+  testReaderToken: ""
+  activeNxbId: ""
+  testDocGiaId: ""
+  testTenDangNhap: ""
+  testDienThoai: ""
+  sach1Id: ""
+  sach2Id: ""
+  sach3Id: ""
+  phieuMuonId: ""
+  ct1Id: ""
+  ct2Id: ""
+  ct3Id: ""
+  kp1Id: ""
+  kp2Id: ""
+  kp3Id: ""

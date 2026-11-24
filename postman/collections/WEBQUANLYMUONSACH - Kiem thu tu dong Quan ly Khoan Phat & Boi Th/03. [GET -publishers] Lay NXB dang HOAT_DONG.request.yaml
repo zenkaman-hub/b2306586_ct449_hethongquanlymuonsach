@@ -1,0 +1,19 @@
+$kind: http-request
+name: 03. [GET /publishers] Lay NXB dang HOAT_DONG
+url: "{{baseUrl}}/publishers?trangThai=HOAT_DONG"
+method: GET
+queryParams:
+  trangThai: HOAT_DONG
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      const activeNxb = json.data.danhSach.find(n => n.trangThai === 'HOAT_DONG');
+      if (activeNxb) {
+          pm.collectionVariables.set('activeNxbId', activeNxb._id);
+      }
+    language: text/javascript
+order: 3000

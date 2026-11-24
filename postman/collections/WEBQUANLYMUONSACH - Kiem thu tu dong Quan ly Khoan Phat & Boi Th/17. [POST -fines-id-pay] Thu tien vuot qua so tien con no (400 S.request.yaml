@@ -1,0 +1,27 @@
+$kind: http-request
+name: 17. [POST /fines/:id/pay] Thu tien vuot qua so tien con no (400 SO_TIEN_THU_KHONG_HOP_LE)
+url: "{{baseUrl}}/fines/{{kp2Id}}/pay"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "soTienThu": 500000,
+      "ghiChuXuLy": "Nhap nham so tien vuot muc"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan thu tien vuot soTienConNo voi ma loi SO_TIEN_THU_KHONG_HOP_LE', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('SO_TIEN_THU_KHONG_HOP_LE');
+      });
+    language: text/javascript
+order: 17000

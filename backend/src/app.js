@@ -8,6 +8,11 @@ const nhanVienRoutes = require('./routes/nhanVien.route');
 const phieuMuonRoutes = require('./routes/phieuMuon.route');
 const khoanPhatRoutes = require('./routes/khoanPhat.route');
 const {
+  settingsRouter,
+  auditLogsRouter,
+  dashboardRouter,
+} = require('./routes/heThong.route');
+const {
   notFoundHandler,
   errorHandler,
 } = require('./middlewares/error.middleware');
@@ -52,6 +57,14 @@ app.use('/api/phieu-muon', phieuMuonRoutes);
 // Routes quan ly Khoan phat & boi thuong (ho tro ca /api/fines va /api/khoan-phat)
 app.use('/api/fines', khoanPhatRoutes);
 app.use('/api/khoan-phat', khoanPhatRoutes);
+
+// Routes Cau hinh thu vien, Nhat ky he thong & Thong ke Dashboard
+app.use('/api/settings', settingsRouter);
+app.use('/api/cau-hinh', settingsRouter);
+app.use('/api/audit-logs', auditLogsRouter);
+app.use('/api/nhat-ky', auditLogsRouter);
+app.use('/api/dashboard', dashboardRouter);
+app.use('/api/thong-ke', dashboardRouter);
 
 // Middleware xu ly route khong ton tai va xu ly loi tap trung
 app.use(notFoundHandler);

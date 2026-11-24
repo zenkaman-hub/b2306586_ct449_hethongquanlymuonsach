@@ -1,0 +1,30 @@
+$kind: http-request
+name: 07. [POST /books] Tao Sach Test Phat 2 (donGia = 100000)
+url: "{{baseUrl}}/books"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenSach": "Sach Test Phat 02 - {{$timestamp}}",
+      "donGia": 100000,
+      "tongSoQuyen": 2,
+      "namXuatBan": 2024,
+      "nhaXuatBanId": "{{activeNxbId}}",
+      "nguonGocTacGia": "Tac Gia Phat 02"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 201 Created', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('sach2Id', json.data._id);
+      }
+    language: text/javascript
+order: 7000

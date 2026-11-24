@@ -1,0 +1,30 @@
+$kind: http-request
+name: 20. [POST /fines/:id/pay] Thu not phan con no (60.000d) cua Khoan phat 2 -> DA_THANH_TOAN & chiTietSach -> DA_XU_LY
+url: "{{baseUrl}}/fines/{{kp2Id}}/pay"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "ghiChuXuLy": "Thu du phan con lai 60.000 VND"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Khoan phat 2 chuyen sang DA_THANH_TOAN, chiTietSach chuyen sang DA_XU_LY, tong no con 180000', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThai).to.eql('DA_THANH_TOAN');
+          pm.expect(json.data.soTienDaThanhToan).to.eql(100000);
+          pm.expect(json.data.soTienConNo).to.eql(0);
+          pm.expect(json.data.chiTietSach.trangThai).to.eql('DA_XU_LY');
+          pm.expect(json.data.docGiaId.tongTienPhatChuaTra).to.eql(180000);
+      });
+    language: text/javascript
+order: 20000

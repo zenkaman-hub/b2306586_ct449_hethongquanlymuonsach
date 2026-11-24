@@ -69,6 +69,7 @@ Mọi lỗi từ hệ thống đều trả về định dạng JSON thống nh�
 | 5 | Quản lý Nhân viên | `/api/employees` (alias `/api/nhan-vien`) | [`docs/api/employees.md`](./api/employees.md) | Đã hoàn thành |
 | 6 | Quản lý Mượn – Trả Sách | `/api/loans` (alias `/api/phieu-muon`) | [`docs/api/loans.md`](./api/loans.md) | Đã hoàn thành |
 | 7 | Quản lý Khoản Phạt & Bồi Thường | `/api/fines` (alias `/api/khoan-phat`) | [`docs/api/fines.md`](./api/fines.md) | Đã hoàn thành |
+| 8 | Cấu hình, Nhật ký Hệ thống & Dashboard | `/api/settings`, `/api/audit-logs`, `/api/dashboard` | [`docs/api/system.md`](./api/system.md) | Đã hoàn thành |
 
 *(Khi xây dựng module mới, tạo file `docs/api/<ten-module>.md` và thêm 1 dòng vào bảng trên.)*
 
