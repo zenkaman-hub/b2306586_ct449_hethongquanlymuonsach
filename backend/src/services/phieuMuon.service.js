@@ -192,8 +192,10 @@ const layNhanVienThucHien = async (user, session = null) => {
 /**
  * Lay danh sach Phieu muon (danh cho QUAN_TRI va THU_THU)
  */
-const layDanhSachPhieuMuon = async (query = {}) => {
-  await dongBoTrangThaiQuaHan();
+const layDanhSachPhieuMuon = async (query = {}, boQuaDongBoQuaHan = false) => {
+  if (!boQuaDongBoQuaHan) {
+    await dongBoTrangThaiQuaHan();
+  }
 
   const page = Math.max(parseInt(query.page, 10) || 1, 1);
   const limit = Math.min(Math.max(parseInt(query.limit, 10) || 10, 1), 100);
@@ -344,10 +346,13 @@ const layLichSuMuonCuaDocGia = async (user, query = {}) => {
 
   await dongBoTrangThaiQuaHan({ docGiaId: docGia._id });
 
-  return layDanhSachPhieuMuon({
-    ...query,
-    docGiaId: docGia._id.toString(),
-  });
+  return layDanhSachPhieuMuon(
+    {
+      ...query,
+      docGiaId: docGia._id.toString(),
+    },
+    true
+  );
 };
 
 /**
@@ -541,7 +546,7 @@ const thucThiLapPhieuMuon = async (duLieu, user, session = null) => {
   if (hanCheMuonKhiCoViPham) {
     if (docGia.tongTienPhatChuaTra > 0) {
       throw new AppError(
-        `DocGia '${docGia.maDocGia}' dang con no tien phat chua thanh toan (${docGia.tongTienPhatChuaTra} VND), khong the muon them sach`,
+        `Doc gia '${docGia.maDocGia}' dang con no tien phat chua thanh toan (${docGia.tongTienPhatChuaTra} VND), khong the muon them sach`,
         403,
         'DOC_GIA_CON_NO_PHAT'
       );
@@ -880,8 +885,12 @@ const thucThiTraSach = async (phieuMuonId, duLieuTra, user, session = null) => {
   const dsNhatKyMoi = [];
   let tongTienPhatPhatSinh = 0;
 
+  // Pha 1: Kiem tra toan bo danhSachTra truoc khi ghi bat ky thay doi nao vao CSDL
+  // (Tranh lech ton kho tren MongoDB Standalone neu cuon sau bi loi 404/409/trung lap)
+  const tapChiTietDaChon = new Set();
+  const danhSachHopLe = [];
+
   for (const itemTra of duLieuTra.danhSachTra) {
-    // Tim chiTietMuon theo chiTietMuonId hoac sachId
     const chiTiet = phieuMuon.chiTietMuon.find((ct) => {
       if (itemTra.chiTietMuonId) {
         return ct._id.toString() === itemTra.chiTietMuonId;
@@ -896,6 +905,16 @@ const thucThiTraSach = async (phieuMuonId, duLieuTra, user, session = null) => {
         'KHONG_TIM_THAY_CHI_TIET_MUON'
       );
     }
+
+    const chiTietIdStr = chiTiet._id.toString();
+    if (tapChiTietDaChon.has(chiTietIdStr)) {
+      throw new AppError(
+        `Cuon sach '${chiTiet.maSach} - ${chiTiet.tenSach}' bi trung lap trong danhSachTra`,
+        400,
+        'DU_LIEU_KHONG_HOP_LE'
+      );
+    }
+    tapChiTietDaChon.add(chiTietIdStr);
 
     // Chong xac nhan tra trung (Muc 5.1 docs/db.md)
     if (
@@ -916,6 +935,15 @@ const thucThiTraSach = async (phieuMuonId, duLieuTra, user, session = null) => {
       );
     }
 
+    danhSachHopLe.push({
+      itemTra,
+      chiTiet,
+      trangThaiTruoc: chiTiet.trangThai,
+    });
+  }
+
+  // Pha 2: Thuc thi cap nhat ton kho, chi tiet muon, khoan phat va nhat ky
+  for (const { itemTra, chiTiet, trangThaiTruoc } of danhSachHopLe) {
     const soNgayTre = tinhSoNgayTre(chiTiet.hanTra, ngayTraThucTe);
     const tinhTrang = itemTra.tinhTrangKhiTra;
 
@@ -949,6 +977,32 @@ const thucThiTraSach = async (phieuMuonId, duLieuTra, user, session = null) => {
         session ? { session } : {}
       );
 
+      // Neu HU_HONG_NHE va thu thu co nhap soTienBoiThuong > 0 thi tao khoan phat HU_HONG
+      let soTienBoiThuongHuHongNhe = 0;
+      if (
+        tinhTrang === TINH_TRANG_KHI_TRA.HU_HONG_NHE &&
+        itemTra.soTienBoiThuong !== null &&
+        itemTra.soTienBoiThuong > 0
+      ) {
+        soTienBoiThuongHuHongNhe = itemTra.soTienBoiThuong;
+        const maKhoanPhat = `${prefixKP}${String(currentKPNumber++).padStart(4, '0')}`;
+        dsKhoanPhatMoi.push({
+          maKhoanPhat,
+          docGiaId: docGia._id,
+          phieuMuonId: phieuMuon._id,
+          chiTietMuonId: chiTiet._id,
+          loaiPhat: LOAI_PHAT.HU_HONG,
+          soNgayTre: null,
+          mucPhatApDung: soTienBoiThuongHuHongNhe,
+          soTienPhat: soTienBoiThuongHuHongNhe,
+          soTienDaThanhToan: 0,
+          trangThai: TRANG_THAI_KHOAN_PHAT.CHUA_THANH_TOAN,
+          lyDo: `Boi thuong sach hu hong nhe '${chiTiet.maSach} - ${chiTiet.tenSach}': ${itemTra.moTaHuHong}`,
+          nguoiTaoId: nhanVien._id,
+        });
+        tongTienPhatPhatSinh += soTienBoiThuongHuHongNhe;
+      }
+
       dsNhatKyMoi.push({
         hanhDong: HANH_DONG_NHAT_KY.XAC_NHAN_TRA_SACH,
         doiTuongCollection: TEN_COLLECTION.PHIEU_MUON,
@@ -958,7 +1012,7 @@ const thucThiTraSach = async (phieuMuonId, duLieuTra, user, session = null) => {
         duLieuTruoc: {
           chiTietMuonId: chiTiet._id,
           maSach: chiTiet.maSach,
-          trangThai: TRANG_THAI_CHI_TIET_MUON.DANG_MUON,
+          trangThai: trangThaiTruoc,
         },
         duLieuSau: {
           chiTietMuonId: chiTiet._id,
@@ -966,6 +1020,9 @@ const thucThiTraSach = async (phieuMuonId, duLieuTra, user, session = null) => {
           trangThai: chiTiet.trangThai,
           tinhTrangKhiTra: tinhTrang,
           soNgayTre,
+          ...(soTienBoiThuongHuHongNhe > 0
+            ? { soTienBoiThuong: soTienBoiThuongHuHongNhe }
+            : {}),
         },
         lyDo: itemTra.moTaHuHong || 'Xac nhan tra sach',
         thoiDiem: ngayTraThucTe,
@@ -1158,8 +1215,28 @@ const thucThiTraSach = async (phieuMuonId, duLieuTra, user, session = null) => {
     tongTienPhatPhatSinh > 0 &&
     docGia.trangThaiQuyenMuon === TRANG_THAI_QUYEN_MUON.DUOC_MUON
   ) {
+    const duLieuTruocQuyenMuon = {
+      trangThaiQuyenMuon: docGia.trangThaiQuyenMuon,
+      lyDoHanCheMuon: docGia.lyDoHanCheMuon,
+    };
+    const lyDoHanChe = `Phat sinh khoan phat chua thanh toan (${docGia.tongTienPhatChuaTra} VND) tu phieu muon ${phieuMuon.maPhieuMuon}`;
     docGia.trangThaiQuyenMuon = TRANG_THAI_QUYEN_MUON.BI_HAN_CHE;
-    docGia.lyDoHanCheMuon = `Phat sinh khoan phat chua thanh toan (${docGia.tongTienPhatChuaTra} VND) tu phieu muon ${phieuMuon.maPhieuMuon}`;
+    docGia.lyDoHanCheMuon = lyDoHanChe;
+
+    dsNhatKyMoi.push({
+      hanhDong: HANH_DONG_NHAT_KY.HAN_CHE_QUYEN_MUON,
+      doiTuongCollection: TEN_COLLECTION.DOC_GIA,
+      doiTuongId: docGia._id,
+      nguoiThucHienId: user.taiKhoanId,
+      vaiTroNguoiThucHien: user.vaiTro,
+      duLieuTruoc: duLieuTruocQuyenMuon,
+      duLieuSau: {
+        trangThaiQuyenMuon: docGia.trangThaiQuyenMuon,
+        lyDoHanCheMuon: lyDoHanChe,
+      },
+      lyDo: lyDoHanChe,
+      thoiDiem: ngayTraThucTe,
+    });
   }
 
   docGia.nguoiCapNhatId = user.taiKhoanId;
@@ -1231,14 +1308,40 @@ const giaHanMuon = async (phieuMuonId, duLieuGiaHan, user) => {
   }
 
   const docGia = await DocGia.findById(phieuMuon.docGiaId).lean();
-  if (
-    !docGia ||
-    docGia.trangThaiQuyenMuon !== TRANG_THAI_QUYEN_MUON.DUOC_MUON
-  ) {
+  if (!docGia) {
+    throw new AppError(
+      'Khong tim thay ho so doc gia cua phieu muon nay',
+      404,
+      'KHONG_TIM_THAY_DOC_GIA'
+    );
+  }
+
+  if (docGia.trangThaiHoSo !== TRANG_THAI_HO_SO_DOC_GIA.HOAT_DONG) {
+    throw new AppError(
+      `Ho so doc gia '${docGia.maDocGia}' da ngung hoat dong, khong the gia han sach`,
+      403,
+      'HO_SO_DOC_GIA_NGUNG_HOAT_DONG'
+    );
+  }
+
+  if (docGia.trangThaiQuyenMuon !== TRANG_THAI_QUYEN_MUON.DUOC_MUON) {
     throw new AppError(
       'Doc gia dang bi han che quyen muon, khong the gia han sach',
       403,
       'DOC_GIA_BI_HAN_CHE_MUON'
+    );
+  }
+
+  const hanCheMuonKhiCoViPham =
+    cauHinh && typeof cauHinh.hanCheMuonKhiCoViPham === 'boolean'
+      ? cauHinh.hanCheMuonKhiCoViPham
+      : true;
+
+  if (hanCheMuonKhiCoViPham && docGia.tongTienPhatChuaTra > 0) {
+    throw new AppError(
+      `Doc gia '${docGia.maDocGia}' dang con no tien phat (${docGia.tongTienPhatChuaTra} VND), khong the gia han sach`,
+      403,
+      'DOC_GIA_CON_NO_PHAT'
     );
   }
 

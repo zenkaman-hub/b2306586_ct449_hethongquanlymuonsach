@@ -83,14 +83,21 @@ const validateLapPhieuMuon = (body = {}) => {
   // 3. hanTraChung (tuy chon - neu muon set han tra chung cho ca phieu)
   let hanTraChung = null;
   if (body.hanTra !== undefined && body.hanTra !== null && body.hanTra !== '') {
-    const parsed = new Date(body.hanTra);
-    if (Number.isNaN(parsed.getTime())) {
+    if (typeof body.hanTra !== 'string') {
       errors.push({
         field: 'hanTra',
-        message: 'hanTra khong dung dinh dang ngay thang',
+        message: 'hanTra phai la chuoi ngay thang hop le',
       });
     } else {
-      hanTraChung = parsed;
+      const parsed = new Date(body.hanTra.trim());
+      if (Number.isNaN(parsed.getTime())) {
+        errors.push({
+          field: 'hanTra',
+          message: 'hanTra khong dung dinh dang ngay thang',
+        });
+      } else {
+        hanTraChung = parsed;
+      }
     }
   }
 
@@ -200,14 +207,21 @@ const validateLapPhieuMuon = (body = {}) => {
           item.hanTra !== null &&
           item.hanTra !== ''
         ) {
-          const parsed = new Date(item.hanTra);
-          if (Number.isNaN(parsed.getTime())) {
+          if (typeof item.hanTra !== 'string') {
             errors.push({
               field: `danhSachSach[${index}].hanTra`,
-              message: `hanTra o dong thu ${index + 1} khong hop le`,
+              message: `hanTra o dong thu ${index + 1} phai la chuoi ngay thang hop le`,
             });
           } else {
-            itemHanTra = parsed;
+            const parsed = new Date(item.hanTra.trim());
+            if (Number.isNaN(parsed.getTime())) {
+              errors.push({
+                field: `danhSachSach[${index}].hanTra`,
+                message: `hanTra o dong thu ${index + 1} khong hop le`,
+              });
+            } else {
+              itemHanTra = parsed;
+            }
           }
         }
 
@@ -515,14 +529,21 @@ const validateGiaHanMuon = (body = {}) => {
     body.hanTraMoi !== null &&
     body.hanTraMoi !== ''
   ) {
-    const parsedDate = new Date(body.hanTraMoi);
-    if (Number.isNaN(parsedDate.getTime())) {
+    if (typeof body.hanTraMoi !== 'string') {
       errors.push({
         field: 'hanTraMoi',
-        message: 'hanTraMoi khong dung dinh dang ngay thang',
+        message: 'hanTraMoi phai la chuoi ngay thang hop le',
       });
     } else {
-      hanTraMoi = parsedDate;
+      const parsedDate = new Date(body.hanTraMoi.trim());
+      if (Number.isNaN(parsedDate.getTime())) {
+        errors.push({
+          field: 'hanTraMoi',
+          message: 'hanTraMoi khong dung dinh dang ngay thang',
+        });
+      } else {
+        hanTraMoi = parsedDate;
+      }
     }
   }
 
