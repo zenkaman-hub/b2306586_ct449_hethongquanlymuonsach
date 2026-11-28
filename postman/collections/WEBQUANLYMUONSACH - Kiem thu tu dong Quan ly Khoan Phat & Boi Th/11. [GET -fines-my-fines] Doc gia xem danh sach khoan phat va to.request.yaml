@@ -1,0 +1,21 @@
+$kind: http-request
+name: 11. [GET /fines/my-fines] Doc gia xem danh sach khoan phat va tong no ca nhan (200 OK - BR-02)
+url: "{{baseUrl}}/fines/my-fines"
+method: GET
+headers:
+  Authorization: Bearer {{testReaderToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve dung 3 khoan phat va tongTienPhatChuaTra = 280000', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.tongTienPhatChuaTra).to.eql(280000);
+          pm.expect(json.data.trangThaiQuyenMuon).to.eql('BI_HAN_CHE');
+          pm.expect(json.data.danhSach.length).to.eql(3);
+      });
+    language: text/javascript
+order: 11000

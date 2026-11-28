@@ -1,0 +1,19 @@
+$kind: http-request
+name: 19. [GET /loans/:id] Doc gia khac (docgia01) thu xem phieu muon cua testDocGia (403 - BR-02)
+url: "{{baseUrl}}/loans/{{phieuChinhId}}"
+method: GET
+headers:
+  Authorization: Bearer {{reader01Token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden (BR-02)', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan doc gia xem phieu muon cua nguoi khac voi ma loi KHONG_DU_QUYEN', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');
+      });
+    language: text/javascript
+order: 19000

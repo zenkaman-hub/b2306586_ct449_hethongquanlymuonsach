@@ -1,0 +1,21 @@
+$kind: collection
+name: WEBQUANLYMUONSACH - Kiem thu tu dong Nghiep vu Muon - Tra - Gia Han
+description: Bo kiem thu tu dong toan dien (26 kich ban) cho module Quan ly Phieu Muon & Tra Sach (/api/loans) theo PROJECT.md (Muc 5.3 - 5.10, 9.1, BR-01 -> BR-14).
+variables:
+  baseUrl: http://localhost:5000/api
+  librarianToken: ""
+  reader01Token: ""
+  testReaderToken: ""
+  activeNxbId: ""
+  testDocGiaId: ""
+  testTenDangNhap: ""
+  sach1Id: ""
+  sach2Id: ""
+  sach3Id: ""
+  sachHetKhoId: ""
+  phieuHuyId: ""
+  phieuChinhId: ""
+  ctSach1Id: ""
+  ctSach2Id: ""
+  ctSach3Id: ""
+  testDienThoai: ""

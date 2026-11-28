@@ -1,0 +1,31 @@
+$kind: http-request
+name: 09. [POST] Tao sach thuoc NXB da NGUNG_HOAT_DONG (400 NXB_NGUNG_HOAT_DONG)
+url: "{{baseUrl}}/books"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenSach": "Sach Thuoc NXB Ngung Hoat Dong",
+      "donGia": 100000,
+      "tongSoQuyen": 5,
+      "namXuatBan": 2024,
+      "nhaXuatBanId": "{{inactiveNxbId}}",
+      "nguonGocTacGia": "Tac Gia Test"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan tao sach cho NXB ngung hoat dong (NXB_NGUNG_HOAT_DONG)', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('NXB_NGUNG_HOAT_DONG');
+      });
+    language: text/javascript
+order: 9000

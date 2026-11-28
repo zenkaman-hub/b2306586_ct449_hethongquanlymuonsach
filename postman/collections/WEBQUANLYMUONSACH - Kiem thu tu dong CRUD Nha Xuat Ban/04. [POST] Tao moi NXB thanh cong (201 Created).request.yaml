@@ -1,0 +1,39 @@
+$kind: http-request
+url: "{{baseUrl}}/publishers"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenNXB": "{{tenNxbTest}}",
+      "diaChi": "70 Tran Hung Dao, Hoan Kiem, Ha Noi",
+      "trangThai": "HOAT_DONG"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const uniqueSuffix = Date.now();
+      pm.collectionVariables.set('tenNxbTest', 'NXB Khoa Hoc AutoTest ' + uniqueSuffix);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 201 Created', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      pm.test('Tao NXB moi thanh cong va tu sinh maNXB', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data._id).to.be.a('string');
+          pm.expect(json.data.maNXB).to.match(/^NXB\d+$/);
+          pm.expect(json.data.trangThai).to.eql('HOAT_DONG');
+          pm.expect(json.data.soDauSach).to.eql(0);
+      });
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('createdNxbId', json.data._id);
+          pm.collectionVariables.set('createdMaNXB', json.data.maNXB);
+      }
+    language: text/javascript
+order: 4000

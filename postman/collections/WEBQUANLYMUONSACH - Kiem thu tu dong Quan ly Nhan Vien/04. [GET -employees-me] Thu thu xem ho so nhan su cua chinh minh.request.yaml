@@ -1,0 +1,20 @@
+$kind: http-request
+name: 04. [GET /employees/me] Thu thu xem ho so nhan su cua chinh minh (200 OK)
+url: "{{baseUrl}}/employees/me"
+method: GET
+headers:
+  Authorization: Bearer {{librarianToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve dung ho so NV0002 cua thuthu', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.msnv).to.eql('NV0002');
+          pm.expect(json.data.taiKhoanId.tenDangNhap).to.eql('thuthu');
+      });
+    language: text/javascript
+order: 4000

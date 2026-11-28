@@ -1,0 +1,26 @@
+$kind: http-request
+name: 19. [PATCH /fines/:id/cancel] Thu HUY Khoan phat 2 da thu 1 phan tien (409 KHOAN_PHAT_DA_THU_TIEN_KHONG_THE_HUY)
+url: "{{baseUrl}}/fines/{{kp2Id}}/cancel"
+method: PATCH
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "ghiChuXuLy": "Thu huy khoan phat da thu 40k"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan huy khoan phat da thu tien voi ma loi KHOAN_PHAT_DA_THU_TIEN_KHONG_THE_HUY', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHOAN_PHAT_DA_THU_TIEN_KHONG_THE_HUY');
+      });
+    language: text/javascript
+order: 19000

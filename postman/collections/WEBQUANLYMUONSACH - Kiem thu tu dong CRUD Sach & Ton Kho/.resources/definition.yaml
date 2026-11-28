@@ -1,0 +1,11 @@
+$kind: collection
+description: Bo kiem thu tu dong toan dien (22 kich ban) cho module Sach & Quan ly Ton kho (/api/books) theo PROJECT.md (Muc 5.10, 9.1, BR-11, BR-12, BR-13).
+variables:
+  baseUrl: http://localhost:5000/api
+  adminToken: ""
+  readerToken: ""
+  activeNxbId: ""
+  inactiveNxbId: ""
+  createdSachId: ""
+  createdMaSach: ""
+  tenSachTest: ""

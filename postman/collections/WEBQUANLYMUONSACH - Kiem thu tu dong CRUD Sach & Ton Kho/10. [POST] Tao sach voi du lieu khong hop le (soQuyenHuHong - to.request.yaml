@@ -1,0 +1,32 @@
+$kind: http-request
+name: 10. [POST] Tao sach voi du lieu khong hop le (soQuyenHuHong > tongSoQuyen -> 400)
+url: "{{baseUrl}}/books"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenSach": "Sach Loi So Luong",
+      "donGia": 100000,
+      "tongSoQuyen": 5,
+      "soQuyenHuHong": 10,
+      "namXuatBan": 2024,
+      "nhaXuatBanId": "{{activeNxbId}}",
+      "nguonGocTacGia": "Tac Gia Test"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Bao loi DU_LIEU_KHONG_HOP_LE khi soQuyenHuHong > tongSoQuyen', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('DU_LIEU_KHONG_HOP_LE');
+      });
+    language: text/javascript
+order: 10000

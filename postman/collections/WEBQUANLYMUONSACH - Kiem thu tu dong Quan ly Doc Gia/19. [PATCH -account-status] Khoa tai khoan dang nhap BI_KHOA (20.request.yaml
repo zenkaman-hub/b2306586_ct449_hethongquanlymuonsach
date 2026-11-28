@@ -1,0 +1,28 @@
+$kind: http-request
+name: 19. [PATCH /account-status] Khoa tai khoan dang nhap BI_KHOA (200 OK - BR-03 & BR-12)
+url: "{{baseUrl}}/readers/{{createdDocGiaId}}/account-status"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThai": "BI_KHOA",
+      "lyDoKhoa": "Vi pham noi quy thu vien"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tai khoan chuyen sang BI_KHOA kem lyDoKhoa', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.taiKhoanId.trangThai).to.eql('BI_KHOA');
+          pm.expect(json.data.taiKhoanId.lyDoKhoa).to.eql('Vi pham noi quy thu vien');
+      });
+    language: text/javascript
+order: 19000

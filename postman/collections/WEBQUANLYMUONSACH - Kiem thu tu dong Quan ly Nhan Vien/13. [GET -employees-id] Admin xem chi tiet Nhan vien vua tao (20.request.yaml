@@ -1,0 +1,19 @@
+$kind: http-request
+name: 13. [GET /employees/:id] Admin xem chi tiet Nhan vien vua tao (200 OK)
+url: "{{baseUrl}}/employees/{{createdNhanVienId}}"
+method: GET
+headers:
+  Authorization: Bearer {{adminToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve dung ho so chi tiet Nhan vien vua tao', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data._id).to.eql(pm.collectionVariables.get('createdNhanVienId'));
+      });
+    language: text/javascript
+order: 13000

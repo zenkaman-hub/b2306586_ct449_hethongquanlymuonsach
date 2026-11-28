@@ -1,0 +1,28 @@
+$kind: http-request
+name: 21. [POST /loans/:id/extend] Gia han Cuon sach 2 lan thu 2 (400 VUOT_SO_LAN_GIA_HAN_TOI_DA)
+url: "{{baseUrl}}/loans/{{phieuChinhId}}/extend"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "chiTietMuonId": "{{ctSach2Id}}",
+      "soNgayGiaHan": 7,
+      "lyDo": "Xin gia han lan 2"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan gia han vuot soLanGiaHanToiDa (1 lan)', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('VUOT_SO_LAN_GIA_HAN_TOI_DA');
+      });
+    language: text/javascript
+order: 21000

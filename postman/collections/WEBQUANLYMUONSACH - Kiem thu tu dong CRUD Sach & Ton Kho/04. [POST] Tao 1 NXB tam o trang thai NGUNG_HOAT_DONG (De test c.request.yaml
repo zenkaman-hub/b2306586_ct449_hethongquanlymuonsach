@@ -1,0 +1,27 @@
+$kind: http-request
+name: 04. [POST] Tao 1 NXB tam o trang thai NGUNG_HOAT_DONG (De test chan tao sach)
+url: "{{baseUrl}}/publishers"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenNXB": "NXB Tam Ngung Test Sach {{$timestamp}}",
+      "diaChi": "Can Tho",
+      "trangThai": "NGUNG_HOAT_DONG"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 201 Created', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('inactiveNxbId', json.data._id);
+      }
+    language: text/javascript
+order: 4000

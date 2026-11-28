@@ -1,0 +1,26 @@
+$kind: http-request
+name: 24. [PATCH /loans/:id/cancel] Thu huy phieu muon da co sach tra (409 PHIEU_MUON_DA_CO_SACH_TRA)
+url: "{{baseUrl}}/loans/{{phieuChinhId}}/cancel"
+method: PATCH
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "lyDoHuy": "Thu huy phieu da co sach tra"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan huy phieu muon da phat sinh tra sach', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('PHIEU_MUON_DA_CO_SACH_TRA');
+      });
+    language: text/javascript
+order: 24000

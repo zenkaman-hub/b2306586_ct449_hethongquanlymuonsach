@@ -1,0 +1,27 @@
+$kind: http-request
+name: 07. [PUT /readers/me] Doc gia co tinh tu sua trangThaiQuyenMuon (400 KHONG_SUA_TRUC_TIEP_TRANG_THAI)
+url: "{{baseUrl}}/readers/me"
+method: PUT
+headers:
+  Authorization: Bearer {{readerToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThaiQuyenMuon": "DUOC_MUON",
+      "tongTienPhatChuaTra": 0
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan sua truc tiep trangThaiQuyenMuon qua API PUT', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_SUA_TRUC_TIEP_TRANG_THAI');
+      });
+    language: text/javascript
+order: 7000

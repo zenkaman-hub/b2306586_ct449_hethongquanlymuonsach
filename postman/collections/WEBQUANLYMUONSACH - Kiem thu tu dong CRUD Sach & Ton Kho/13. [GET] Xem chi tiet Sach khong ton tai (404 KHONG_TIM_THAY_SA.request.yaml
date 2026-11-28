@@ -1,0 +1,17 @@
+$kind: http-request
+name: 13. [GET] Xem chi tiet Sach khong ton tai (404 KHONG_TIM_THAY_SACH)
+url: "{{baseUrl}}/books/67401a000000000000099999"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 404 Not Found', function () {
+          pm.response.to.have.status(404);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve ma loi KHONG_TIM_THAY_SACH', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_TIM_THAY_SACH');
+      });
+    language: text/javascript
+order: 13000

@@ -1,0 +1,28 @@
+$kind: http-request
+name: 18. [PATCH] Dieu chinh ton kho vi pham bat bien (400 VI_PHAM_BAT_BIEN_TON_KHO)
+url: "{{baseUrl}}/books/{{createdSachId}}/inventory"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tongSoQuyen": 5,
+      "soQuyenHuHong": 10,
+      "lyDo": "Test vi pham bat bien ton kho"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan khi tongSoQuyen < soQuyenDangMuon + soQuyenHuHong (VI_PHAM_BAT_BIEN_TON_KHO)', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('VI_PHAM_BAT_BIEN_TON_KHO');
+      });
+    language: text/javascript
+order: 18000

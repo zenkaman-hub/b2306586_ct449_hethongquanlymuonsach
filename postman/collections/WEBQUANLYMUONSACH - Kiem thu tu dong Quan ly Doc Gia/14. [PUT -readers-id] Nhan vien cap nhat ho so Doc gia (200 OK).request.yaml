@@ -1,0 +1,29 @@
+$kind: http-request
+name: 14. [PUT /readers/:id] Nhan vien cap nhat ho so Doc gia (200 OK)
+url: "{{baseUrl}}/readers/{{createdDocGiaId}}"
+method: PUT
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "hoLot": "Vo Minh",
+      "ten": "Khoa (Updated)",
+      "diaChi": "Quan Cai Rang, TP. Can Tho"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Cap nhat hoLot, ten va diaChi thanh cong', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.ten).to.eql('Khoa (Updated)');
+          pm.expect(json.data.diaChi).to.eql('Quan Cai Rang, TP. Can Tho');
+      });
+    language: text/javascript
+order: 14000

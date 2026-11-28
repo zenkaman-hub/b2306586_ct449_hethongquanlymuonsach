@@ -1,0 +1,47 @@
+$kind: http-request
+name: 09. [POST /employees] Admin tao moi Tai khoan + Ho so Nhan vien (201 Created - BR-14)
+url: "{{baseUrl}}/employees"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "{{createdTenDangNhap}}",
+      "matKhau": "ThuThu@123",
+      "vaiTro": "THU_THU",
+      "email": "{{createdTenDangNhap}}@thuviendhct.edu.vn",
+      "hoTenNV": "Nguyen Van Minh",
+      "chucVu": "Thu thu",
+      "diaChi": "Quan Binh Thuy, TP. Can Tho",
+      "soDienThoai": "{{createdSoDienThoai}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const suffix = String(Date.now()).slice(-7);
+      pm.collectionVariables.set('createdTenDangNhap', 'nv_autotest_' + suffix);
+      pm.collectionVariables.set('createdSoDienThoai', '093' + suffix);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 201 Created', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      pm.test('Tao dong thoi tai_khoan va nhan_vien kem tu sinh msnv', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data._id).to.be.a('string');
+          pm.expect(json.data.msnv).to.match(/^NV\d+$/);
+          pm.expect(json.data.trangThaiLamViec).to.eql('DANG_LAM_VIEC');
+          pm.expect(json.data.taiKhoanId.vaiTro).to.eql('THU_THU');
+          pm.expect(json.data.taiKhoanId.tenDangNhap).to.eql(pm.collectionVariables.get('createdTenDangNhap'));
+      });
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('createdNhanVienId', json.data._id);
+          pm.collectionVariables.set('createdMsnv', json.data.msnv);
+      }
+    language: text/javascript
+order: 9000

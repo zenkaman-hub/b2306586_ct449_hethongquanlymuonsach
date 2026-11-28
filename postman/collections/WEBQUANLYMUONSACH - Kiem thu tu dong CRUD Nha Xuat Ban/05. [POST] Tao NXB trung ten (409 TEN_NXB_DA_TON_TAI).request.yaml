@@ -1,0 +1,26 @@
+$kind: http-request
+url: "{{baseUrl}}/publishers"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenNXB": "{{tenNxbTest}}",
+      "diaChi": "Dia chi khac"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Bao loi TEN_NXB_DA_TON_TAI khi trung ten NXB', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('TEN_NXB_DA_TON_TAI');
+      });
+    language: text/javascript
+order: 5000

@@ -1,0 +1,19 @@
+$kind: http-request
+name: 24. [DELETE /employees/:id] Xoa vat ly Nhan vien moi tao chua phat sinh giao dich (200 OK)
+url: "{{baseUrl}}/employees/{{createdNhanVienId}}"
+method: DELETE
+headers:
+  Authorization: Bearer {{adminToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Xoa dong thoi nhan_vien va tai_khoan thanh cong', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data._id).to.eql(pm.collectionVariables.get('createdNhanVienId'));
+      });
+    language: text/javascript
+order: 24000

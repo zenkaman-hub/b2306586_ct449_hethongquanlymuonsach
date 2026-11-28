@@ -1,0 +1,29 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "admin",
+      "matKhau": "Admin@123"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Dang nhap Admin thanh cong va nhan JWT token', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.token).to.be.a('string');
+          pm.expect(json.data.taiKhoan.vaiTro).to.eql('QUAN_TRI');
+      });
+      if (json.data && json.data.token) {
+          pm.collectionVariables.set('adminToken', json.data.token);
+      }
+    language: text/javascript
+order: 1000

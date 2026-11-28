@@ -1,0 +1,28 @@
+$kind: http-request
+name: 21. [PATCH /work-status] Chuyen Nhan vien sang NGHI_VIEC -> Tu dong khoa tai khoan (200 OK - BR-11)
+url: "{{baseUrl}}/employees/{{createdNhanVienId}}/work-status"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThaiLamViec": "NGHI_VIEC",
+      "lyDo": "Nhan vien nghi viec theo quyet dinh nhan su"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Chuyen trangThaiLamViec sang NGHI_VIEC va tu dong khoa tai_khoan', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThaiLamViec).to.eql('NGHI_VIEC');
+          pm.expect(json.data.taiKhoanId.trangThai).to.eql('BI_KHOA');
+      });
+    language: text/javascript
+order: 21000

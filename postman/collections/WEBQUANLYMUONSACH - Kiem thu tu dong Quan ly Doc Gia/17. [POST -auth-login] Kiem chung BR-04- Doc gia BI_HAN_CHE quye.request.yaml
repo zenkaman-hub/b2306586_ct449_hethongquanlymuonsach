@@ -1,0 +1,30 @@
+$kind: http-request
+name: "17. [POST /auth/login] Kiem chung BR-04: Doc gia BI_HAN_CHE quyen muon VAN dang nhap duoc (200 OK)"
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "{{createdTenDangNhap}}",
+      "matKhau": "DocGia@123"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK (BR-04)', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Doc gia bi han che quyen muon van dang nhap va nhan token binh thuong', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.token).to.be.a('string');
+          pm.expect(json.data.hoSo.trangThaiQuyenMuon).to.eql('BI_HAN_CHE');
+      });
+      if (json.data && json.data.token) {
+          pm.collectionVariables.set('newReaderToken', json.data.token);
+      }
+    language: text/javascript
+order: 17000

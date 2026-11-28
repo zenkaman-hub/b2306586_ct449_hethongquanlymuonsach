@@ -1,0 +1,29 @@
+$kind: http-request
+name: 10. [POST /loans] Doc gia thu tu lap phieu muon (403 KHONG_DU_QUYEN - BR-01)
+url: "{{baseUrl}}/loans"
+method: POST
+headers:
+  Authorization: Bearer {{reader01Token}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "docGiaId": "{{testDocGiaId}}",
+      "danhSachSach": [
+        { "sachId": "{{sach1Id}}" }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden (BR-01)', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan DOC_GIA tu lap phieu muon voi ma loi KHONG_DU_QUYEN', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');
+      });
+    language: text/javascript
+order: 10000

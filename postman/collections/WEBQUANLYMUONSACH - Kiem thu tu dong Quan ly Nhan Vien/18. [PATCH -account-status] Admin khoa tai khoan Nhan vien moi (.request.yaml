@@ -1,0 +1,28 @@
+$kind: http-request
+name: 18. [PATCH /account-status] Admin khoa tai khoan Nhan vien moi (200 OK - BR-03 & BR-12)
+url: "{{baseUrl}}/employees/{{createdNhanVienId}}/account-status"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThai": "BI_KHOA",
+      "lyDoKhoa": "Tam khoa ban giao cong viec"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Chuyen tai khoan nhan vien sang BI_KHOA kem lyDoKhoa', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.taiKhoanId.trangThai).to.eql('BI_KHOA');
+          pm.expect(json.data.taiKhoanId.lyDoKhoa).to.eql('Tam khoa ban giao cong viec');
+      });
+    language: text/javascript
+order: 18000

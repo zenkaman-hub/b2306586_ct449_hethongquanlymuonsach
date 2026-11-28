@@ -1,0 +1,30 @@
+$kind: http-request
+name: 20. [POST /loans/:id/extend] Gia han muon cho Cuon sach 2 (200 OK - Muc 5.9 PROJECT.md)
+url: "{{baseUrl}}/loans/{{phieuChinhId}}/extend"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "chiTietMuonId": "{{ctSach2Id}}",
+      "soNgayGiaHan": 7,
+      "lyDo": "Sinh vien xin gia han on thi"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      const ct2 = json.data.chiTietMuon.find(c => c._id === pm.collectionVariables.get('ctSach2Id'));
+      pm.test('Tang soLanDaGiaHan = 1 va luu lichSuGiaHan', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(ct2.soLanDaGiaHan).to.eql(1);
+          pm.expect(ct2.lichSuGiaHan.length).to.eql(1);
+      });
+    language: text/javascript
+order: 20000

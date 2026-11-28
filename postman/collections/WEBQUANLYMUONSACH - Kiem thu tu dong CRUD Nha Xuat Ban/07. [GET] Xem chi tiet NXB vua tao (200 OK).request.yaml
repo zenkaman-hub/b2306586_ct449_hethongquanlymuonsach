@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/publishers/{{createdNxbId}}"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve dung NXB vua tao', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data._id).to.eql(pm.collectionVariables.get('createdNxbId'));
+          pm.expect(json.data.tenNXB).to.eql(pm.collectionVariables.get('tenNxbTest'));
+      });
+    language: text/javascript
+order: 7000

@@ -1,0 +1,26 @@
+$kind: http-request
+name: "19. [POST /auth/login] Kiem chung BR-03: Nhan vien BI_KHOA khong the dang nhap (403 TAI_KHOAN_BI_KHOA)"
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "{{createdTenDangNhap}}",
+      "matKhau": "ThuThu@123"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden (BR-03)', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan dang nhap voi ma loi TAI_KHOAN_BI_KHOA', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('TAI_KHOAN_BI_KHOA');
+      });
+    language: text/javascript
+order: 19000

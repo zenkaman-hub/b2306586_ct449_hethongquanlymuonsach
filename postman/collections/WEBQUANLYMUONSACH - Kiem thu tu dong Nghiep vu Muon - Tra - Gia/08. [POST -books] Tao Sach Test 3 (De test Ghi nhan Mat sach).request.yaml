@@ -1,0 +1,30 @@
+$kind: http-request
+name: 08. [POST /books] Tao Sach Test 3 (De test Ghi nhan Mat sach)
+url: "{{baseUrl}}/books"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenSach": "Sach Test Muon Tra 03 - {{$timestamp}}",
+      "donGia": 150000,
+      "tongSoQuyen": 3,
+      "namXuatBan": 2024,
+      "nhaXuatBanId": "{{activeNxbId}}",
+      "nguonGocTacGia": "Tac Gia 03"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Tao Sach Test 3 thanh cong (201 Created, donGia=150000)', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('sach3Id', json.data._id);
+      }
+    language: text/javascript
+order: 8000

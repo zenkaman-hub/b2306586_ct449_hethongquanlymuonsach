@@ -1,0 +1,26 @@
+$kind: http-request
+url: "{{baseUrl}}/books?conSachKhaDung=true&trangThaiLuuThong=DANG_LUU_THONG&page=1&limit=10"
+method: GET
+queryParams:
+  conSachKhaDung: "true"
+  trangThaiLuuThong: DANG_LUU_THONG
+  page: "1"
+  limit: "10"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve danhSach sach kem thong tin NXB populate va phanTrang', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.danhSach).to.be.an('array');
+          pm.expect(json.data.phanTrang).to.be.an('object');
+          if (json.data.danhSach.length > 0) {
+              pm.expect(json.data.danhSach[0].soQuyenKhaDung).to.be.above(0);
+              pm.expect(json.data.danhSach[0].nhaXuatBanId).to.be.an('object');
+          }
+      });
+    language: text/javascript
+order: 5000

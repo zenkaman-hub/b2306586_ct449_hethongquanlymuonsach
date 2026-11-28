@@ -1,0 +1,28 @@
+$kind: http-request
+name: 05. [PUT /readers/me] Doc gia tu cap nhat thong tin ca nhan hop le (200 OK)
+url: "{{baseUrl}}/readers/me"
+method: PUT
+headers:
+  Authorization: Bearer {{readerToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "hoLot": "Le Van",
+      "ten": "An",
+      "diaChi": "Ky tuc xa B, Dai hoc Can Tho"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Cap nhat diaChi ca nhan thanh cong', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.diaChi).to.eql('Ky tuc xa B, Dai hoc Can Tho');
+      });
+    language: text/javascript
+order: 5000

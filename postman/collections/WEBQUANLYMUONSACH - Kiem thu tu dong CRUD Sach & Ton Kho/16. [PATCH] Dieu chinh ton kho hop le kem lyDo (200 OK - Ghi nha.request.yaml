@@ -1,0 +1,30 @@
+$kind: http-request
+name: 16. [PATCH] Dieu chinh ton kho hop le kem lyDo (200 OK - Ghi nhat_ky_he_thong BR-12)
+url: "{{baseUrl}}/books/{{createdSachId}}/inventory"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tongSoQuyen": 20,
+      "soQuyenHuHong": 1,
+      "lyDo": "Nhap bo sung 5 quyen moi va phuc hoi 1 quyen hu hong nhe"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Cap nhat tongSoQuyen=20, soQuyenHuHong=1 => soQuyenKhaDung=19', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.tongSoQuyen).to.eql(20);
+          pm.expect(json.data.soQuyenHuHong).to.eql(1);
+          pm.expect(json.data.soQuyenKhaDung).to.eql(19);
+      });
+    language: text/javascript
+order: 16000

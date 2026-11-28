@@ -1,0 +1,31 @@
+$kind: http-request
+url: "{{baseUrl}}/books"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "maSach": "{{createdMaSach}}",
+      "tenSach": "Dau Sach Khac Nhung Trung Ma",
+      "donGia": 90000,
+      "tongSoQuyen": 5,
+      "namXuatBan": 2024,
+      "nhaXuatBanId": "{{activeNxbId}}",
+      "nguonGocTacGia": "Tac Gia Khac"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan trung maSach voi ma loi MA_SACH_DA_TON_TAI', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('MA_SACH_DA_TON_TAI');
+      });
+    language: text/javascript
+order: 8000

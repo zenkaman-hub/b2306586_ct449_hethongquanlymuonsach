@@ -1,0 +1,35 @@
+$kind: http-request
+name: 04. [POST /readers] Tao Doc gia rieng cho luong test Muon - Tra
+url: "{{baseUrl}}/readers"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "{{testTenDangNhap}}",
+      "matKhau": "DocGia@123",
+      "hoLot": "Tran Van",
+      "ten": "Muon Sach",
+      "dienThoai": "{{testDienThoai}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const suffix = String(Date.now()).slice(-7);
+      pm.collectionVariables.set('testTenDangNhap', 'dg_muontra_' + suffix);
+      pm.collectionVariables.set('testDienThoai', '096' + suffix);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 201 Created', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('testDocGiaId', json.data._id);
+      }
+    language: text/javascript
+order: 4000

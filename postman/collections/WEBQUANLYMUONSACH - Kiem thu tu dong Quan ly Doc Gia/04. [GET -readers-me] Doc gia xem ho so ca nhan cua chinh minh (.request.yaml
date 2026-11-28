@@ -1,0 +1,20 @@
+$kind: http-request
+name: 04. [GET /readers/me] Doc gia xem ho so ca nhan cua chinh minh (BR-02)
+url: "{{baseUrl}}/readers/me"
+method: GET
+headers:
+  Authorization: Bearer {{readerToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve dung ho so DG0001 cua docgia01', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.maDocGia).to.eql('DG0001');
+          pm.expect(json.data.taiKhoanId.tenDangNhap).to.eql('docgia01');
+      });
+    language: text/javascript
+order: 4000

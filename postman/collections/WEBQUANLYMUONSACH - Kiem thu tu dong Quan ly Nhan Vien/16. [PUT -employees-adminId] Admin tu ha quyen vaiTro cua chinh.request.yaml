@@ -1,0 +1,26 @@
+$kind: http-request
+name: 16. [PUT /employees/:adminId] Admin tu ha quyen vaiTro cua chinh minh (400 KHONG_THE_TU_HA_QUYEN_QUAN_TRI)
+url: "{{baseUrl}}/employees/{{adminNhanVienId}}"
+method: PUT
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "vaiTro": "THU_THU"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan Admin tu ha vaiTro xuong THU_THU', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_THE_TU_HA_QUYEN_QUAN_TRI');
+      });
+    language: text/javascript
+order: 16000

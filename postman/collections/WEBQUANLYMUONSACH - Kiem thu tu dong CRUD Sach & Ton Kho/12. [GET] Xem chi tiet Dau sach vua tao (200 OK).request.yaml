@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/books/{{createdSachId}}"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Tra ve dung thong tin chi tiet dau sach kem NXB populate', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data._id).to.eql(pm.collectionVariables.get('createdSachId'));
+          pm.expect(json.data.nhaXuatBanId).to.be.an('object');
+      });
+    language: text/javascript
+order: 12000

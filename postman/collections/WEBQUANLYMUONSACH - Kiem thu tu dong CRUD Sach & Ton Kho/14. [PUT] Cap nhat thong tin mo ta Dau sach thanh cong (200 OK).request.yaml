@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/books/{{createdSachId}}"
+method: PUT
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenSach": "{{tenSachTest}} (Tai ban)",
+      "donGia": 145000,
+      "namXuatBan": 2025
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Cap nhat donGia va namXuatBan thanh cong', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.donGia).to.eql(145000);
+          pm.expect(json.data.namXuatBan).to.eql(2025);
+      });
+    language: text/javascript
+order: 14000

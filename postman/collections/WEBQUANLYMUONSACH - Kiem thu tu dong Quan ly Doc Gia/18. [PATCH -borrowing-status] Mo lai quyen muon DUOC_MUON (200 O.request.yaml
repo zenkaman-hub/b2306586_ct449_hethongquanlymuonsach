@@ -1,0 +1,28 @@
+$kind: http-request
+name: 18. [PATCH /borrowing-status] Mo lai quyen muon DUOC_MUON (200 OK - BR-12)
+url: "{{baseUrl}}/readers/{{createdDocGiaId}}/borrowing-status"
+method: PATCH
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThaiQuyenMuon": "DUOC_MUON",
+      "lyDo": "Doc gia da hoan tat nghia vu"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Mo lai quyen muon DUOC_MUON va xoa lyDoHanCheMuon', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThaiQuyenMuon).to.eql('DUOC_MUON');
+          pm.expect(json.data.lyDoHanCheMuon).to.be.null;
+      });
+    language: text/javascript
+order: 18000

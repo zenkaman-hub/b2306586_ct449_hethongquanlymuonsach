@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/publishers/{{nxbCoSachId}}"
+method: DELETE
+headers:
+  Authorization: Bearer {{adminToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict (BR-11)', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan xoa vat ly NXB dang co sach voi ma loi NXB_DANG_CO_SACH_THAM_CHIEU', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('NXB_DANG_CO_SACH_THAM_CHIEU');
+      });
+    language: text/javascript
+order: 10000

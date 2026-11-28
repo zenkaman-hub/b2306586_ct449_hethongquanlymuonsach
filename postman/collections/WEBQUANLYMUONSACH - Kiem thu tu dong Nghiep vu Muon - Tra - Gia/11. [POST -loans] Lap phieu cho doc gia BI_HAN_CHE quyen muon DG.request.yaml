@@ -1,0 +1,29 @@
+$kind: http-request
+name: 11. [POST /loans] Lap phieu cho doc gia BI_HAN_CHE quyen muon DG0002 (403 BR-04)
+url: "{{baseUrl}}/loans"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "maDocGia": "DG0002",
+      "danhSachSach": [
+        { "sachId": "{{sach1Id}}" }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden (BR-04)', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan doc gia BI_HAN_CHE muon sach voi ma loi DOC_GIA_BI_HAN_CHE_MUON', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('DOC_GIA_BI_HAN_CHE_MUON');
+      });
+    language: text/javascript
+order: 11000

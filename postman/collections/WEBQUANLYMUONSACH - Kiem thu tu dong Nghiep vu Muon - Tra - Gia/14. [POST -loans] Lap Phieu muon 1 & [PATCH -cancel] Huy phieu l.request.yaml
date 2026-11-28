@@ -1,0 +1,29 @@
+$kind: http-request
+name: 14. [POST /loans] Lap Phieu muon 1 & [PATCH /cancel] Huy phieu lap nham (Hoan ton kho - BR-11)
+url: "{{baseUrl}}/loans"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "docGiaId": "{{testDocGiaId}}",
+      "ghiChu": "Phieu muon test huy phieu",
+      "danhSachSach": [
+        { "sachId": "{{sach1Id}}" }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Lap phieu muon 1 thanh cong (201 Created)', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('phieuHuyId', json.data._id);
+      }
+    language: text/javascript
+order: 14000

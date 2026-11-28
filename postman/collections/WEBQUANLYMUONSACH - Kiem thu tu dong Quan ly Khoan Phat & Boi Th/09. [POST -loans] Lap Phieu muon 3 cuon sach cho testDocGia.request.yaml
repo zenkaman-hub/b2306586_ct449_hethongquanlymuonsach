@@ -1,0 +1,37 @@
+$kind: http-request
+name: 09. [POST /loans] Lap Phieu muon 3 cuon sach cho testDocGia
+url: "{{baseUrl}}/loans"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "docGiaId": "{{testDocGiaId}}",
+      "ghiChu": "Phieu muon test xu ly khoan phat",
+      "danhSachSach": [
+        { "sachId": "{{sach1Id}}" },
+        { "sachId": "{{sach2Id}}" },
+        { "sachId": "{{sach3Id}}" }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 201 Created', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('phieuMuonId', json.data._id);
+          const ct1 = json.data.chiTietMuon.find(c => c.sachId === pm.collectionVariables.get('sach1Id'));
+          const ct2 = json.data.chiTietMuon.find(c => c.sachId === pm.collectionVariables.get('sach2Id'));
+          const ct3 = json.data.chiTietMuon.find(c => c.sachId === pm.collectionVariables.get('sach3Id'));
+          if (ct1) pm.collectionVariables.set('ct1Id', ct1._id);
+          if (ct2) pm.collectionVariables.set('ct2Id', ct2._id);
+          if (ct3) pm.collectionVariables.set('ct3Id', ct3._id);
+      }
+    language: text/javascript
+order: 9000

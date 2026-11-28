@@ -1,0 +1,26 @@
+$kind: http-request
+name: 21. [POST /fines/:id/pay] Thu thu tien lai Khoan phat 2 da thanh toan du (400 TRANG_THAI_KHOAN_PHAT_KHONG_CHO_PHEP)
+url: "{{baseUrl}}/fines/{{kp2Id}}/pay"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "soTienThu": 10000
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Chan thu tien khoan phat da DA_THANH_TOAN', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('TRANG_THAI_KHOAN_PHAT_KHONG_CHO_PHEP');
+      });
+    language: text/javascript
+order: 21000

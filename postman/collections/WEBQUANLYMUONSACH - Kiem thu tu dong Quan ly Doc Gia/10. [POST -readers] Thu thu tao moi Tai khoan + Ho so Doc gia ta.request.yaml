@@ -1,0 +1,48 @@
+$kind: http-request
+name: 10. [POST /readers] Thu thu tao moi Tai khoan + Ho so Doc gia tai quay (201 Created - BR-14)
+url: "{{baseUrl}}/readers"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "{{createdTenDangNhap}}",
+      "matKhau": "DocGia@123",
+      "email": "{{createdTenDangNhap}}@student.ctu.edu.vn",
+      "hoLot": "Vo Minh",
+      "ten": "Khoa",
+      "ngaySinh": "2004-11-20",
+      "phai": "NAM",
+      "diaChi": "Quan Ninh Kieu, TP. Can Tho",
+      "dienThoai": "{{createdDienThoai}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const suffix = String(Date.now()).slice(-7);
+      pm.collectionVariables.set('createdTenDangNhap', 'dg_autotest_' + suffix);
+      pm.collectionVariables.set('createdDienThoai', '098' + suffix);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 201 Created', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      pm.test('Tao dong thoi tai_khoan va doc_gia kem tu sinh maDocGia', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data._id).to.be.a('string');
+          pm.expect(json.data.maDocGia).to.match(/^DG\d+$/);
+          pm.expect(json.data.trangThaiQuyenMuon).to.eql('DUOC_MUON');
+          pm.expect(json.data.trangThaiHoSo).to.eql('HOAT_DONG');
+          pm.expect(json.data.taiKhoanId.tenDangNhap).to.eql(pm.collectionVariables.get('createdTenDangNhap'));
+      });
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('createdDocGiaId', json.data._id);
+          pm.collectionVariables.set('createdMaDocGia', json.data.maDocGia);
+      }
+    language: text/javascript
+order: 10000

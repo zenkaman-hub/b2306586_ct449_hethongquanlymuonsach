@@ -1,0 +1,46 @@
+$kind: http-request
+name: 25. [POST /loans/:id/return] Tra Cuon 2 (HU_HONG_NANG) & Cuon 3 (MAT) -> Phieu HOAN_TAT & Tao Khoan Phat (BR-10)
+url: "{{baseUrl}}/loans/{{phieuChinhId}}/return"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "ghiChu": "Tra 2 cuon con lai: 1 cuon hu hong nang, 1 cuon bao mat",
+      "danhSachTra": [
+        {
+          "chiTietMuonId": "{{ctSach2Id}}",
+          "tinhTrangKhiTra": "HU_HONG_NANG",
+          "moTaHuHong": "Rach nat 30 trang ruot khong the phuc hoi"
+        },
+        {
+          "chiTietMuonId": "{{ctSach3Id}}",
+          "tinhTrangKhiTra": "MAT",
+          "moTaHuHong": "Doc gia lam that lac sach"
+        }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      const ct2 = json.data.chiTietMuon.find(c => c._id === pm.collectionVariables.get('ctSach2Id'));
+      const ct3 = json.data.chiTietMuon.find(c => c._id === pm.collectionVariables.get('ctSach3Id'));
+      pm.test('Phieu chuyen sang HOAN_TAT, sinh 2 khoan phat (HU_HONG + MAT_SACH) va han che quyen muon doc gia', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThai).to.eql('HOAN_TAT');
+          pm.expect(ct2.trangThai).to.eql('HU_HONG');
+          pm.expect(ct3.trangThai).to.eql('MAT_SACH');
+          pm.expect(json.data.danhSachKhoanPhat.length).to.eql(2);
+          pm.expect(json.data.docGiaId.soSachDangMuon).to.eql(0);
+          pm.expect(json.data.docGiaId.tongTienPhatChuaTra).to.eql(270000);
+          pm.expect(json.data.docGiaId.trangThaiQuyenMuon).to.eql('BI_HAN_CHE');
+      });
+    language: text/javascript
+order: 25000

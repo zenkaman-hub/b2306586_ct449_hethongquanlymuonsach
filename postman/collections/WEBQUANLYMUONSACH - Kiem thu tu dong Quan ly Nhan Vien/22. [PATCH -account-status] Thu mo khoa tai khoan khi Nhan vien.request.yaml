@@ -1,0 +1,26 @@
+$kind: http-request
+name: 22. [PATCH /account-status] Thu mo khoa tai khoan khi Nhan vien dang NGHI_VIEC (409 NHAN_VIEN_DANG_NGHI_VIEC)
+url: "{{baseUrl}}/employees/{{createdNhanVienId}}/account-status"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThai": "HOAT_DONG"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan mo khoa tai khoan khi nhan vien dang NGHI_VIEC', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('NHAN_VIEN_DANG_NGHI_VIEC');
+      });
+    language: text/javascript
+order: 22000

@@ -1,0 +1,27 @@
+$kind: http-request
+name: 22. [PATCH /profile-status] Ngung hoat dong ho so Doc gia (200 OK - Soft Delete BR-11)
+url: "{{baseUrl}}/readers/{{createdDocGiaId}}/profile-status"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThaiHoSo": "NGUNG_HOAT_DONG",
+      "lyDo": "Sinh vien ra truong"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Ho so chuyen sang NGUNG_HOAT_DONG', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThaiHoSo).to.eql('NGUNG_HOAT_DONG');
+      });
+    language: text/javascript
+order: 22000

@@ -1,0 +1,19 @@
+$kind: http-request
+name: 20. [DELETE] Xoa Dau sach moi tao chua co giao dich muon tra (200 OK)
+url: "{{baseUrl}}/books/{{createdSachId}}"
+method: DELETE
+headers:
+  Authorization: Bearer {{adminToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Xoa vat ly dau sach chua co giao dich thanh cong', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data._id).to.eql(pm.collectionVariables.get('createdSachId'));
+      });
+    language: text/javascript
+order: 20000

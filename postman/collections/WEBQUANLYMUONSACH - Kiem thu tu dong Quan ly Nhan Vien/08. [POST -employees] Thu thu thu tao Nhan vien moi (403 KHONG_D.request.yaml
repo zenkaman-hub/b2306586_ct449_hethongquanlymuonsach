@@ -1,0 +1,30 @@
+$kind: http-request
+name: 08. [POST /employees] Thu thu thu tao Nhan vien moi (403 KHONG_DU_QUYEN)
+url: "{{baseUrl}}/employees"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "nv_trai_phep",
+      "matKhau": "ThuThu@123",
+      "hoTenNV": "Nhan Vien Trai Phep",
+      "chucVu": "Thu thu",
+      "soDienThoai": "0909999999"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 403 Forbidden', function () {
+          pm.response.to.have.status(403);
+      });
+      const json = pm.response.json();
+      pm.test('Chan THU_THU tao tai khoan nhan vien', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');
+      });
+    language: text/javascript
+order: 8000

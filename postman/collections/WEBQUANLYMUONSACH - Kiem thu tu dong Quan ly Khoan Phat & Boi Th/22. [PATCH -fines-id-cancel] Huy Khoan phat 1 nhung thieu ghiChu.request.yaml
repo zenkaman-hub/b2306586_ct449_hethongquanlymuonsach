@@ -1,0 +1,23 @@
+$kind: http-request
+name: 22. [PATCH /fines/:id/cancel] Huy Khoan phat 1 nhung thieu ghiChuXuLy (400 DU_LIEU_KHONG_HOP_LE - BR-12)
+url: "{{baseUrl}}/fines/{{kp1Id}}/cancel"
+method: PATCH
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: "{}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 400 Bad Request', function () {
+          pm.response.to.have.status(400);
+      });
+      const json = pm.response.json();
+      pm.test('Bat buoc phai co ghiChuXuLy khi huy phat', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('DU_LIEU_KHONG_HOP_LE');
+      });
+    language: text/javascript
+order: 22000

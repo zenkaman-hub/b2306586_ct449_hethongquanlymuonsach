@@ -1,0 +1,31 @@
+$kind: http-request
+name: 23. [POST /loans/:id/return] Thu xac nhan tra trung Cuon sach 1 (409 CHI_TIET_MUON_DA_DUOC_XU_LY)
+url: "{{baseUrl}}/loans/{{phieuChinhId}}/return"
+method: POST
+headers:
+  Authorization: Bearer {{librarianToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "danhSachTra": [
+        {
+          "chiTietMuonId": "{{ctSach1Id}}",
+          "tinhTrangKhiTra": "NGUYEN_VEN"
+        }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan xac nhan tra trung cuon sach da tra', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('CHI_TIET_MUON_DA_DUOC_XU_LY');
+      });
+    language: text/javascript
+order: 23000

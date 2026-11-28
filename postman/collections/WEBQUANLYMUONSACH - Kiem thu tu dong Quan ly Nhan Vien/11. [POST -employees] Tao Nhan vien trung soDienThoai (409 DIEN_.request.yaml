@@ -1,0 +1,30 @@
+$kind: http-request
+name: 11. [POST /employees] Tao Nhan vien trung soDienThoai (409 DIEN_THOAI_DA_TON_TAI)
+url: "{{baseUrl}}/employees"
+method: POST
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "tenDangNhap": "nv_khac_{{$timestamp}}",
+      "matKhau": "ThuThu@123",
+      "hoTenNV": "Nhan Vien Trung SDT",
+      "chucVu": "Thu thu",
+      "soDienThoai": "{{createdSoDienThoai}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 409 Conflict', function () {
+          pm.response.to.have.status(409);
+      });
+      const json = pm.response.json();
+      pm.test('Chan trung soDienThoai voi ma loi DIEN_THOAI_DA_TON_TAI', function () {
+          pm.expect(json.success).to.be.false;
+          pm.expect(json.errorCode).to.eql('DIEN_THOAI_DA_TON_TAI');
+      });
+    language: text/javascript
+order: 11000

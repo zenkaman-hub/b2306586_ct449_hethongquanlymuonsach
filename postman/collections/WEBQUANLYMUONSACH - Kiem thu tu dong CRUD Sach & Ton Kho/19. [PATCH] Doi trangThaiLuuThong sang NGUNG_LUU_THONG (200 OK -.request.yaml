@@ -1,0 +1,26 @@
+$kind: http-request
+name: 19. [PATCH] Doi trangThaiLuuThong sang NGUNG_LUU_THONG (200 OK - Soft Delete BR-11)
+url: "{{baseUrl}}/books/{{createdSachId}}/status"
+method: PATCH
+headers:
+  Authorization: Bearer {{adminToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "trangThaiLuuThong": "NGUNG_LUU_THONG"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code la 200 OK', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      pm.test('Chuyen trangThaiLuuThong sang NGUNG_LUU_THONG thanh cong', function () {
+          pm.expect(json.success).to.be.true;
+          pm.expect(json.data.trangThaiLuuThong).to.eql('NGUNG_LUU_THONG');
+      });
+    language: text/javascript
+order: 19000
