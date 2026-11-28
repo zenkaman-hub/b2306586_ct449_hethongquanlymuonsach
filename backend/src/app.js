@@ -3,6 +3,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth.route');
 const nhaXuatBanRoutes = require('./routes/nhaXuatBan.route');
 const sachRoutes = require('./routes/sach.route');
+const docGiaRoutes = require('./routes/docGia.route');
 const {
   notFoundHandler,
   errorHandler,
@@ -31,6 +32,9 @@ app.use('/api/nha-xuat-ban', nhaXuatBanRoutes);
 
 app.use('/api/books', sachRoutes);
 app.use('/api/sach', sachRoutes);
+
+app.use('/api/readers', docGiaRoutes);
+app.use('/api/doc-gia', docGiaRoutes);
 
 // Xử lý 404 và lỗi tập trung
 app.use(notFoundHandler);
