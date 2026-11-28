@@ -1,0 +1,1101 @@
+{
+  "info": {
+    "name": "WEBQUANLYMUONSACH - Kiem thu tu dong Quan ly Nhan Vien",
+    "description": "Bo kiem thu tu dong toan dien (25 kich ban) cho module Quan ly Nhan vien (/api/employees) theo PROJECT.md (Muc 3.1, 3.2, 3.4, BR-03, BR-11, BR-12, BR-13, BR-14).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminNhanVienId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "librarianToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "readerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createdNhanVienId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createdMsnv",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createdTenDangNhap",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createdSoDienThoai",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01. Dang nhap Admin (QUAN_TRI) & Luu adminNhanVienId",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Dang nhap Admin thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.taiKhoan.vaiTro).to.eql('QUAN_TRI');",
+              "    pm.expect(json.data.hoSo._id).to.be.a('string');",
+              "});",
+              "if (json.data && json.data.token) {",
+              "    pm.collectionVariables.set('adminToken', json.data.token);",
+              "    pm.collectionVariables.set('adminNhanVienId', json.data.hoSo._id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"admin\",\n  \"matKhau\": \"Admin@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "02. Dang nhap Thu thu (THU_THU)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Dang nhap Thu thu thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.taiKhoan.vaiTro).to.eql('THU_THU');",
+              "});",
+              "if (json.data && json.data.token) {",
+              "    pm.collectionVariables.set('librarianToken', json.data.token);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"thuthu\",\n  \"matKhau\": \"ThuThu@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "03. Dang nhap Doc gia (DOC_GIA)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Dang nhap Doc gia thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.taiKhoan.vaiTro).to.eql('DOC_GIA');",
+              "});",
+              "if (json.data && json.data.token) {",
+              "    pm.collectionVariables.set('readerToken', json.data.token);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"docgia01\",\n  \"matKhau\": \"DocGia@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "04. [GET /employees/me] Thu thu xem ho so nhan su cua chinh minh (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tra ve dung ho so NV0002 cua thuthu', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.msnv).to.eql('NV0002');",
+              "    pm.expect(json.data.taiKhoanId.tenDangNhap).to.eql('thuthu');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/employees/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "me"]
+        }
+      }
+    },
+    {
+      "name": "05. [GET /employees/me] Doc gia thu truy cap /employees/me (403 KHONG_DU_QUYEN)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 403 Forbidden', function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan DOC_GIA truy cap endpoint nhan vien', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{readerToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/employees/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "me"]
+        }
+      }
+    },
+    {
+      "name": "06. [GET /employees] Thu thu thu xem danh sach Nhan vien (403 - Muc 3.2 PROJECT.md)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 403 Forbidden', function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan THU_THU quan ly nhan vien (chi QUAN_TRI duoc phep)', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/employees",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
+        }
+      }
+    },
+    {
+      "name": "07. [GET /employees] Admin lay danh sach & Loc Nhan vien (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tra ve danhSach nhan vien kem taiKhoanId populate va phanTrang', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.danhSach).to.be.an('array');",
+              "    pm.expect(json.data.phanTrang).to.be.an('object');",
+              "    pm.expect(json.data.danhSach.length).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/employees?trangThaiLamViec=DANG_LAM_VIEC&page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"],
+          "query": [
+            {
+              "key": "trangThaiLamViec",
+              "value": "DANG_LAM_VIEC"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "08. [POST /employees] Thu thu thu tao Nhan vien moi (403 KHONG_DU_QUYEN)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 403 Forbidden', function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan THU_THU tao tai khoan nhan vien', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"nv_trai_phep\",\n  \"matKhau\": \"ThuThu@123\",\n  \"hoTenNV\": \"Nhan Vien Trai Phep\",\n  \"chucVu\": \"Thu thu\",\n  \"soDienThoai\": \"0909999999\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
+        }
+      }
+    },
+    {
+      "name": "09. [POST /employees] Admin tao moi Tai khoan + Ho so Nhan vien (201 Created - BR-14)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const suffix = String(Date.now()).slice(-7);",
+              "pm.collectionVariables.set('createdTenDangNhap', 'nv_autotest_' + suffix);",
+              "pm.collectionVariables.set('createdSoDienThoai', '093' + suffix);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 201 Created', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tao dong thoi tai_khoan va nhan_vien kem tu sinh msnv', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data._id).to.be.a('string');",
+              "    pm.expect(json.data.msnv).to.match(/^NV\\d+$/);",
+              "    pm.expect(json.data.trangThaiLamViec).to.eql('DANG_LAM_VIEC');",
+              "    pm.expect(json.data.taiKhoanId.vaiTro).to.eql('THU_THU');",
+              "    pm.expect(json.data.taiKhoanId.tenDangNhap).to.eql(pm.collectionVariables.get('createdTenDangNhap'));",
+              "});",
+              "if (json.data && json.data._id) {",
+              "    pm.collectionVariables.set('createdNhanVienId', json.data._id);",
+              "    pm.collectionVariables.set('createdMsnv', json.data.msnv);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"{{createdTenDangNhap}}\",\n  \"matKhau\": \"ThuThu@123\",\n  \"vaiTro\": \"THU_THU\",\n  \"email\": \"{{createdTenDangNhap}}@thuviendhct.edu.vn\",\n  \"hoTenNV\": \"Nguyen Van Minh\",\n  \"chucVu\": \"Thu thu\",\n  \"diaChi\": \"Quan Binh Thuy, TP. Can Tho\",\n  \"soDienThoai\": \"{{createdSoDienThoai}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
+        }
+      }
+    },
+    {
+      "name": "10. [POST /employees] Tao Nhan vien trung tenDangNhap (409 TEN_DANG_NHAP_DA_TON_TAI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 409 Conflict', function () {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan trung tenDangNhap voi ma loi TEN_DANG_NHAP_DA_TON_TAI', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('TEN_DANG_NHAP_DA_TON_TAI');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"{{createdTenDangNhap}}\",\n  \"matKhau\": \"ThuThu@123\",\n  \"hoTenNV\": \"Nhan Vien Trung Ten\",\n  \"chucVu\": \"Thu thu\",\n  \"soDienThoai\": \"0944555666\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
+        }
+      }
+    },
+    {
+      "name": "11. [POST /employees] Tao Nhan vien trung soDienThoai (409 DIEN_THOAI_DA_TON_TAI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 409 Conflict', function () {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan trung soDienThoai voi ma loi DIEN_THOAI_DA_TON_TAI', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('DIEN_THOAI_DA_TON_TAI');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"nv_khac_{{$timestamp}}\",\n  \"matKhau\": \"ThuThu@123\",\n  \"hoTenNV\": \"Nhan Vien Trung SDT\",\n  \"chucVu\": \"Thu thu\",\n  \"soDienThoai\": \"{{createdSoDienThoai}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
+        }
+      }
+    },
+    {
+      "name": "12. [POST /employees] Tao Nhan vien voi vaiTro DOC_GIA khong hop le (400 DU_LIEU_KHONG_HOP_LE)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan tao nhan vien voi vaiTro DOC_GIA', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('DU_LIEU_KHONG_HOP_LE');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"nv_sai_vaitro\",\n  \"matKhau\": \"ThuThu@123\",\n  \"vaiTro\": \"DOC_GIA\",\n  \"hoTenNV\": \"Nhan Vien Sai Vai Tro\",\n  \"chucVu\": \"Thu thu\",\n  \"soDienThoai\": \"0944777888\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
+        }
+      }
+    },
+    {
+      "name": "13. [GET /employees/:id] Admin xem chi tiet Nhan vien vua tao (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tra ve dung ho so chi tiet Nhan vien vua tao', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data._id).to.eql(pm.collectionVariables.get('createdNhanVienId'));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{createdNhanVienId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{createdNhanVienId}}"]
+        }
+      }
+    },
+    {
+      "name": "14. [PUT /employees/:id] Admin cap nhat thong tin Nhan vien (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Cap nhat chucVu va diaChi thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.chucVu).to.eql('Thu thu chinh');",
+              "    pm.expect(json.data.diaChi).to.eql('Quan Ninh Kieu, TP. Can Tho');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"hoTenNV\": \"Nguyen Van Minh\",\n  \"chucVu\": \"Thu thu chinh\",\n  \"diaChi\": \"Quan Ninh Kieu, TP. Can Tho\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{createdNhanVienId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{createdNhanVienId}}"]
+        }
+      }
+    },
+    {
+      "name": "15. [PUT /employees/:id] Co tinh sua truc tiep trangThaiLamViec qua PUT (400 KHONG_SUA_TRUC_TIEP_TRANG_THAI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan sua truc tiep trangThaiLamViec qua PUT', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_SUA_TRUC_TIEP_TRANG_THAI');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThaiLamViec\": \"NGHI_VIEC\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{createdNhanVienId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{createdNhanVienId}}"]
+        }
+      }
+    },
+    {
+      "name": "16. [PUT /employees/:adminId] Admin tu ha quyen vaiTro cua chinh minh (400 KHONG_THE_TU_HA_QUYEN_QUAN_TRI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan Admin tu ha vaiTro xuong THU_THU', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_THE_TU_HA_QUYEN_QUAN_TRI');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"vaiTro\": \"THU_THU\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{adminNhanVienId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{adminNhanVienId}}"]
+        }
+      }
+    },
+    {
+      "name": "17. [PATCH /account-status] Admin thu tu khoa tai khoan cua chinh minh (400 KHONG_THE_TU_KHOA_CHINH_MINH)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan Admin tu khoa tai khoan cua chinh minh', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_THE_TU_KHOA_CHINH_MINH');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThai\": \"BI_KHOA\",\n  \"lyDoKhoa\": \"Thu tu khoa chinh minh\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{adminNhanVienId}}/account-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{adminNhanVienId}}", "account-status"]
+        }
+      }
+    },
+    {
+      "name": "18. [PATCH /account-status] Admin khoa tai khoan Nhan vien moi (200 OK - BR-03 & BR-12)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chuyen tai khoan nhan vien sang BI_KHOA kem lyDoKhoa', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.taiKhoanId.trangThai).to.eql('BI_KHOA');",
+              "    pm.expect(json.data.taiKhoanId.lyDoKhoa).to.eql('Tam khoa ban giao cong viec');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThai\": \"BI_KHOA\",\n  \"lyDoKhoa\": \"Tam khoa ban giao cong viec\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{createdNhanVienId}}/account-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{createdNhanVienId}}", "account-status"]
+        }
+      }
+    },
+    {
+      "name": "19. [POST /auth/login] Kiem chung BR-03: Nhan vien BI_KHOA khong the dang nhap (403 TAI_KHOAN_BI_KHOA)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 403 Forbidden (BR-03)', function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan dang nhap voi ma loi TAI_KHOAN_BI_KHOA', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('TAI_KHOAN_BI_KHOA');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"{{createdTenDangNhap}}\",\n  \"matKhau\": \"ThuThu@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "20. [PATCH /account-status] Admin mo khoa lai tai khoan Nhan vien (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Mo khoa tai khoan nhan vien thanh HOAT_DONG', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.taiKhoanId.trangThai).to.eql('HOAT_DONG');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThai\": \"HOAT_DONG\",\n  \"lyDo\": \"Hoan tat ban giao\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{createdNhanVienId}}/account-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{createdNhanVienId}}", "account-status"]
+        }
+      }
+    },
+    {
+      "name": "21. [PATCH /work-status] Chuyen Nhan vien sang NGHI_VIEC -> Tu dong khoa tai khoan (200 OK - BR-11)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chuyen trangThaiLamViec sang NGHI_VIEC va tu dong khoa tai_khoan', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.trangThaiLamViec).to.eql('NGHI_VIEC');",
+              "    pm.expect(json.data.taiKhoanId.trangThai).to.eql('BI_KHOA');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThaiLamViec\": \"NGHI_VIEC\",\n  \"lyDo\": \"Nhan vien nghi viec theo quyet dinh nhan su\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{createdNhanVienId}}/work-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{createdNhanVienId}}", "work-status"]
+        }
+      }
+    },
+    {
+      "name": "22. [PATCH /account-status] Thu mo khoa tai khoan khi Nhan vien dang NGHI_VIEC (409 NHAN_VIEN_DANG_NGHI_VIEC)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 409 Conflict', function () {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan mo khoa tai khoan khi nhan vien dang NGHI_VIEC', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('NHAN_VIEN_DANG_NGHI_VIEC');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThai\": \"HOAT_DONG\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{createdNhanVienId}}/account-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{createdNhanVienId}}", "account-status"]
+        }
+      }
+    },
+    {
+      "name": "23. [DELETE /employees/:adminId] Admin thu tu xoa chinh minh (400 KHONG_THE_TU_XOA_CHINH_MINH)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan Admin tu xoa chinh minh voi ma loi KHONG_THE_TU_XOA_CHINH_MINH', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_THE_TU_XOA_CHINH_MINH');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{adminNhanVienId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{adminNhanVienId}}"]
+        }
+      }
+    },
+    {
+      "name": "24. [DELETE /employees/:id] Xoa vat ly Nhan vien moi tao chua phat sinh giao dich (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Xoa dong thoi nhan_vien va tai_khoan thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data._id).to.eql(pm.collectionVariables.get('createdNhanVienId'));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{createdNhanVienId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{createdNhanVienId}}"]
+        }
+      }
+    },
+    {
+      "name": "25. [GET /employees/:id] Kiem tra Nhan vien da bi xoa khoi CSDL (404 KHONG_TIM_THAY_NHAN_VIEN)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tra ve ma loi KHONG_TIM_THAY_NHAN_VIEN sau khi xoa', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_TIM_THAY_NHAN_VIEN');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/employees/{{createdNhanVienId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "{{createdNhanVienId}}"]
+        }
+      }
+    }
+  ]
+}

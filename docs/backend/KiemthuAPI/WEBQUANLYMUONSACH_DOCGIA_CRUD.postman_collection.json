@@ -1,0 +1,1112 @@
+{
+  "info": {
+    "name": "WEBQUANLYMUONSACH - Kiem thu tu dong Quan ly Doc Gia",
+    "description": "Bo kiem thu tu dong toan dien (25 kich ban) cho module Quan ly Doc gia (/api/readers) theo PROJECT.md (BR-02, BR-03, BR-04, BR-11, BR-12, BR-13, BR-14).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "librarianToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "readerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "newReaderToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createdDocGiaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createdMaDocGia",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createdTenDangNhap",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createdDienThoai",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01. Dang nhap Admin (QUAN_TRI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Dang nhap Admin thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.taiKhoan.vaiTro).to.eql('QUAN_TRI');",
+              "});",
+              "if (json.data && json.data.token) {",
+              "    pm.collectionVariables.set('adminToken', json.data.token);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"admin\",\n  \"matKhau\": \"Admin@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "02. Dang nhap Thu thu (THU_THU)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Dang nhap Thu thu thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.taiKhoan.vaiTro).to.eql('THU_THU');",
+              "});",
+              "if (json.data && json.data.token) {",
+              "    pm.collectionVariables.set('librarianToken', json.data.token);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"thuthu\",\n  \"matKhau\": \"ThuThu@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "03. Dang nhap Doc gia 01 (DOC_GIA)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Dang nhap Doc gia 01 thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.taiKhoan.vaiTro).to.eql('DOC_GIA');",
+              "});",
+              "if (json.data && json.data.token) {",
+              "    pm.collectionVariables.set('readerToken', json.data.token);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"docgia01\",\n  \"matKhau\": \"DocGia@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "04. [GET /readers/me] Doc gia xem ho so ca nhan cua chinh minh (BR-02)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tra ve dung ho so DG0001 cua docgia01', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.maDocGia).to.eql('DG0001');",
+              "    pm.expect(json.data.taiKhoanId.tenDangNhap).to.eql('docgia01');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{readerToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/readers/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "me"]
+        }
+      }
+    },
+    {
+      "name": "05. [PUT /readers/me] Doc gia tu cap nhat thong tin ca nhan hop le (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Cap nhat diaChi ca nhan thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.diaChi).to.eql('Ky tuc xa B, Dai hoc Can Tho');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{readerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"hoLot\": \"Le Van\",\n  \"ten\": \"An\",\n  \"diaChi\": \"Ky tuc xa B, Dai hoc Can Tho\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "me"]
+        }
+      }
+    },
+    {
+      "name": "06. [PUT /readers/me] Doc gia co tinh tu sua maDocGia (403 KHONG_DU_QUYEN - BR-13)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 403 Forbidden', function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan doc gia tu thay doi maDocGia voi ma loi KHONG_DU_QUYEN', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{readerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"maDocGia\": \"DG9999\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "me"]
+        }
+      }
+    },
+    {
+      "name": "07. [PUT /readers/me] Doc gia co tinh tu sua trangThaiQuyenMuon (400 KHONG_SUA_TRUC_TIEP_TRANG_THAI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan sua truc tiep trangThaiQuyenMuon qua API PUT', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_SUA_TRUC_TIEP_TRANG_THAI');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{readerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThaiQuyenMuon\": \"DUOC_MUON\",\n  \"tongTienPhatChuaTra\": 0\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "me"]
+        }
+      }
+    },
+    {
+      "name": "08. [GET /readers] Doc gia thu xem danh sach tat ca doc gia (403 KHONG_DU_QUYEN - BR-02)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 403 Forbidden', function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan DOC_GIA xem danh sach doc gia cua thu vien', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_DU_QUYEN');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{readerToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/readers",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers"]
+        }
+      }
+    },
+    {
+      "name": "09. [GET /readers] Thu thu lay danh sach & Loc Doc gia (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tra ve danhSach doc gia kem taiKhoanId populate va phanTrang', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.danhSach).to.be.an('array');",
+              "    pm.expect(json.data.phanTrang).to.be.an('object');",
+              "    pm.expect(json.data.danhSach.length).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/readers?trangThaiHoSo=HOAT_DONG&coSachDangMuon=false&page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers"],
+          "query": [
+            {
+              "key": "trangThaiHoSo",
+              "value": "HOAT_DONG"
+            },
+            {
+              "key": "coSachDangMuon",
+              "value": "false"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "10. [POST /readers] Thu thu tao moi Tai khoan + Ho so Doc gia tai quay (201 Created - BR-14)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const suffix = String(Date.now()).slice(-7);",
+              "pm.collectionVariables.set('createdTenDangNhap', 'dg_autotest_' + suffix);",
+              "pm.collectionVariables.set('createdDienThoai', '098' + suffix);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 201 Created', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tao dong thoi tai_khoan va doc_gia kem tu sinh maDocGia', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data._id).to.be.a('string');",
+              "    pm.expect(json.data.maDocGia).to.match(/^DG\\d+$/);",
+              "    pm.expect(json.data.trangThaiQuyenMuon).to.eql('DUOC_MUON');",
+              "    pm.expect(json.data.trangThaiHoSo).to.eql('HOAT_DONG');",
+              "    pm.expect(json.data.taiKhoanId.tenDangNhap).to.eql(pm.collectionVariables.get('createdTenDangNhap'));",
+              "});",
+              "if (json.data && json.data._id) {",
+              "    pm.collectionVariables.set('createdDocGiaId', json.data._id);",
+              "    pm.collectionVariables.set('createdMaDocGia', json.data.maDocGia);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"{{createdTenDangNhap}}\",\n  \"matKhau\": \"DocGia@123\",\n  \"email\": \"{{createdTenDangNhap}}@student.ctu.edu.vn\",\n  \"hoLot\": \"Vo Minh\",\n  \"ten\": \"Khoa\",\n  \"ngaySinh\": \"2004-11-20\",\n  \"phai\": \"NAM\",\n  \"diaChi\": \"Quan Ninh Kieu, TP. Can Tho\",\n  \"dienThoai\": \"{{createdDienThoai}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers"]
+        }
+      }
+    },
+    {
+      "name": "11. [POST /readers] Tao Doc gia trung tenDangNhap (409 TEN_DANG_NHAP_DA_TON_TAI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 409 Conflict', function () {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan trung tenDangNhap voi ma loi TEN_DANG_NHAP_DA_TON_TAI', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('TEN_DANG_NHAP_DA_TON_TAI');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"{{createdTenDangNhap}}\",\n  \"matKhau\": \"DocGia@123\",\n  \"hoLot\": \"Nguyen\",\n  \"ten\": \"Trung Ten\",\n  \"dienThoai\": \"0977111222\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers"]
+        }
+      }
+    },
+    {
+      "name": "12. [POST /readers] Tao Doc gia trung dienThoai (409 DIEN_THOAI_DA_TON_TAI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 409 Conflict', function () {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan trung dienThoai voi ma loi DIEN_THOAI_DA_TON_TAI', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('DIEN_THOAI_DA_TON_TAI');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"user_khac_{{$timestamp}}\",\n  \"matKhau\": \"DocGia@123\",\n  \"hoLot\": \"Nguyen\",\n  \"ten\": \"Trung SDT\",\n  \"dienThoai\": \"{{createdDienThoai}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers"]
+        }
+      }
+    },
+    {
+      "name": "13. [GET /readers/:id] Xem chi tiet Doc gia vua tao (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tra ve dung ho so chi tiet Doc gia vua tao', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data._id).to.eql(pm.collectionVariables.get('createdDocGiaId'));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/readers/{{createdDocGiaId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "{{createdDocGiaId}}"]
+        }
+      }
+    },
+    {
+      "name": "14. [PUT /readers/:id] Nhan vien cap nhat ho so Doc gia (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Cap nhat hoLot, ten va diaChi thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.ten).to.eql('Khoa (Updated)');",
+              "    pm.expect(json.data.diaChi).to.eql('Quan Cai Rang, TP. Can Tho');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"hoLot\": \"Vo Minh\",\n  \"ten\": \"Khoa (Updated)\",\n  \"diaChi\": \"Quan Cai Rang, TP. Can Tho\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers/{{createdDocGiaId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "{{createdDocGiaId}}"]
+        }
+      }
+    },
+    {
+      "name": "15. [PATCH /borrowing-status] Han che quyen muon nhung thieu lyDo (400 - BR-12)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Bat buoc phai co lyDoHanCheMuon khi han che quyen muon', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('DU_LIEU_KHONG_HOP_LE');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThaiQuyenMuon\": \"BI_HAN_CHE\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers/{{createdDocGiaId}}/borrowing-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "{{createdDocGiaId}}", "borrowing-status"]
+        }
+      }
+    },
+    {
+      "name": "16. [PATCH /borrowing-status] Han che quyen muon kem ly do (200 OK - BR-04 & BR-12)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chuyen trangThaiQuyenMuon sang BI_HAN_CHE va luu lyDoHanCheMuon', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.trangThaiQuyenMuon).to.eql('BI_HAN_CHE');",
+              "    pm.expect(json.data.lyDoHanCheMuon).to.eql('Tre han tra sach nhieu lan');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThaiQuyenMuon\": \"BI_HAN_CHE\",\n  \"lyDoHanCheMuon\": \"Tre han tra sach nhieu lan\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers/{{createdDocGiaId}}/borrowing-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "{{createdDocGiaId}}", "borrowing-status"]
+        }
+      }
+    },
+    {
+      "name": "17. [POST /auth/login] Kiem chung BR-04: Doc gia BI_HAN_CHE quyen muon VAN dang nhap duoc (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK (BR-04)', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Doc gia bi han che quyen muon van dang nhap va nhan token binh thuong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.token).to.be.a('string');",
+              "    pm.expect(json.data.hoSo.trangThaiQuyenMuon).to.eql('BI_HAN_CHE');",
+              "});",
+              "if (json.data && json.data.token) {",
+              "    pm.collectionVariables.set('newReaderToken', json.data.token);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"{{createdTenDangNhap}}\",\n  \"matKhau\": \"DocGia@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "18. [PATCH /borrowing-status] Mo lai quyen muon DUOC_MUON (200 OK - BR-12)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Mo lai quyen muon DUOC_MUON va xoa lyDoHanCheMuon', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.trangThaiQuyenMuon).to.eql('DUOC_MUON');",
+              "    pm.expect(json.data.lyDoHanCheMuon).to.be.null;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{librarianToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThaiQuyenMuon\": \"DUOC_MUON\",\n  \"lyDo\": \"Doc gia da hoan tat nghia vu\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers/{{createdDocGiaId}}/borrowing-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "{{createdDocGiaId}}", "borrowing-status"]
+        }
+      }
+    },
+    {
+      "name": "19. [PATCH /account-status] Khoa tai khoan dang nhap BI_KHOA (200 OK - BR-03 & BR-12)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tai khoan chuyen sang BI_KHOA kem lyDoKhoa', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.taiKhoanId.trangThai).to.eql('BI_KHOA');",
+              "    pm.expect(json.data.taiKhoanId.lyDoKhoa).to.eql('Vi pham noi quy thu vien');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThai\": \"BI_KHOA\",\n  \"lyDoKhoa\": \"Vi pham noi quy thu vien\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers/{{createdDocGiaId}}/account-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "{{createdDocGiaId}}", "account-status"]
+        }
+      }
+    },
+    {
+      "name": "20. [POST /auth/login] Kiem chung BR-03: Tai khoan BI_KHOA khong the dang nhap (403 TAI_KHOAN_BI_KHOA)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 403 Forbidden (BR-03)', function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan dang nhap voi ma loi TAI_KHOAN_BI_KHOA', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('TAI_KHOAN_BI_KHOA');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenDangNhap\": \"{{createdTenDangNhap}}\",\n  \"matKhau\": \"DocGia@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "21. [GET /readers/me] Kiem chung BR-03: Token cu cua tai khoan BI_KHOA cung bi chan (403)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 403 Forbidden', function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Middleware authenticate chan luon token cu khi tai khoan BI_KHOA', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('TAI_KHOAN_BI_KHOA');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{newReaderToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/readers/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "me"]
+        }
+      }
+    },
+    {
+      "name": "22. [PATCH /profile-status] Ngung hoat dong ho so Doc gia (200 OK - Soft Delete BR-11)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Ho so chuyen sang NGUNG_HOAT_DONG', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data.trangThaiHoSo).to.eql('NGUNG_HOAT_DONG');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThaiHoSo\": \"NGUNG_HOAT_DONG\",\n  \"lyDo\": \"Sinh vien ra truong\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers/{{createdDocGiaId}}/profile-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "{{createdDocGiaId}}", "profile-status"]
+        }
+      }
+    },
+    {
+      "name": "23. [PATCH /account-status] Thu mo khoa tai khoan khi ho so dang NGUNG_HOAT_DONG (409)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 409 Conflict', function () {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Chan mo khoa tai khoan khi ho so NGUNG_HOAT_DONG (HO_SO_DOC_GIA_NGUNG_HOAT_DONG)', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('HO_SO_DOC_GIA_NGUNG_HOAT_DONG');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trangThai\": \"HOAT_DONG\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/readers/{{createdDocGiaId}}/account-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "{{createdDocGiaId}}", "account-status"]
+        }
+      }
+    },
+    {
+      "name": "24. [DELETE /readers/:id] Xoa vat ly Doc gia moi tao chua co giao dich (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Xoa dong thoi doc_gia va tai_khoan thanh cong', function () {",
+              "    pm.expect(json.success).to.be.true;",
+              "    pm.expect(json.data._id).to.eql(pm.collectionVariables.get('createdDocGiaId'));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/readers/{{createdDocGiaId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "{{createdDocGiaId}}"]
+        }
+      }
+    },
+    {
+      "name": "25. [GET /readers/:id] Kiem tra Doc gia da bi xoa khoi CSDL (404 KHONG_TIM_THAY_DOC_GIA)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code la 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Tra ve ma loi KHONG_TIM_THAY_DOC_GIA', function () {",
+              "    pm.expect(json.success).to.be.false;",
+              "    pm.expect(json.errorCode).to.eql('KHONG_TIM_THAY_DOC_GIA');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/readers/{{createdDocGiaId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["readers", "{{createdDocGiaId}}"]
+        }
+      }
+    }
+  ]
+}
