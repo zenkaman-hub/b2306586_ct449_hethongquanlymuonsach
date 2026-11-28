@@ -8,6 +8,11 @@ const nhanVienRoutes = require('./routes/nhanVien.route');
 const phieuMuonRoutes = require('./routes/phieuMuon.route');
 const khoanPhatRoutes = require('./routes/khoanPhat.route');
 const {
+  settingsRouter,
+  auditLogsRouter,
+  dashboardRouter,
+} = require('./routes/heThong.route');
+const {
   notFoundHandler,
   errorHandler,
 } = require('./middlewares/error.middleware');
@@ -47,6 +52,14 @@ app.use('/api/phieu-muon', phieuMuonRoutes);
 
 app.use('/api/fines', khoanPhatRoutes);
 app.use('/api/khoan-phat', khoanPhatRoutes);
+
+// Cấu hình thư viện, nhật ký hệ thống & thống kê
+app.use('/api/settings', settingsRouter);
+app.use('/api/cau-hinh', settingsRouter);
+app.use('/api/audit-logs', auditLogsRouter);
+app.use('/api/nhat-ky', auditLogsRouter);
+app.use('/api/dashboard', dashboardRouter);
+app.use('/api/thong-ke', dashboardRouter);
 
 // Xử lý 404 và lỗi tập trung
 app.use(notFoundHandler);
