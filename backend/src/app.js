@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const authRoutes = require('./routes/auth.route');
 const {
   notFoundHandler,
   errorHandler,
@@ -18,6 +19,9 @@ app.get('/api/health', (req, res) => {
     message: 'Backend WEBQUANLYMUONSACH is running',
   });
 });
+
+// Xác thực & phân quyền
+app.use('/api/auth', authRoutes);
 
 // Xử lý 404 và lỗi tập trung
 app.use(notFoundHandler);
