@@ -6,6 +6,7 @@ const sachRoutes = require('./routes/sach.route');
 const docGiaRoutes = require('./routes/docGia.route');
 const nhanVienRoutes = require('./routes/nhanVien.route');
 const phieuMuonRoutes = require('./routes/phieuMuon.route');
+const khoanPhatRoutes = require('./routes/khoanPhat.route');
 const {
   notFoundHandler,
   errorHandler,
@@ -43,6 +44,9 @@ app.use('/api/nhan-vien', nhanVienRoutes);
 
 app.use('/api/loans', phieuMuonRoutes);
 app.use('/api/phieu-muon', phieuMuonRoutes);
+
+app.use('/api/fines', khoanPhatRoutes);
+app.use('/api/khoan-phat', khoanPhatRoutes);
 
 // Xử lý 404 và lỗi tập trung
 app.use(notFoundHandler);
