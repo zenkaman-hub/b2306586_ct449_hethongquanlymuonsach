@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/auth.route');
+const nhaXuatBanRoutes = require('./routes/nhaXuatBan.route');
 const {
   notFoundHandler,
   errorHandler,
@@ -22,6 +23,10 @@ app.get('/api/health', (req, res) => {
 
 // Xác thực & phân quyền
 app.use('/api/auth', authRoutes);
+
+// Các module nghiệp vụ (hỗ trợ cả đường dẫn tiếng Anh và tiếng Việt)
+app.use('/api/publishers', nhaXuatBanRoutes);
+app.use('/api/nha-xuat-ban', nhaXuatBanRoutes);
 
 // Xử lý 404 và lỗi tập trung
 app.use(notFoundHandler);
